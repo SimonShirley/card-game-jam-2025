@@ -1,7 +1,59 @@
+GOTO Initialise_Program
+
+Shuffle_Deck:
+    REM Reset Deck
+    FOR I = 0 TO 51
+        TS%(I) = I
+    NEXT I
+
+    FOR I = 0 TO 51
+        RD% = 52 - I
+        GOSUB Get_Random_Number
+
+        SD%(I) = TS%(RD%) : REM Get card from deck
+
+        IF RD% >= 51 THEN Shuffle_Deck__Continue
+        
+        REM Slide cards along one
+        FOR J = RD% TO 50
+            TS%(J) = TS%(J + 1)
+        NEXT J
+
+Shuffle_Deck__Continue:
+        PRINT "{166} ";
+    NEXT I
+
+    RETURN
+
+
+Get_Random_Number:
+    REM Returns RD% - Random Output
+    RD% = INT(RND(1) * RD%)
+    RETURN
+
 
 Initialise_Program:
     VL = 1024  : REM $0400 - First Screen Location
     CR = 55296 : REM $D800 - Colour RAM Base
+    DIM SD%(51) : REM Shuffled Card Deck Order
+    DIM TS%(51) : REM Temp Shuffle Array
+
+
+
+Restart:
+    RD% = RND(-TI) : REM Re-seed the randomiser
+
+    POKE 53280,5 : REM Set border colour to green - $D020
+    POKE 53281,5 : REM Set background colour to green - $D020
+
+    PRINT "{clr}{home}{white}Shuffling deck..."
+    PRINT
+
+    GOSUB Shuffle_Deck
+
+    GOSUB Game_Screen
+
+Wait_Key: GOTO Wait_Key
 
 Game_Screen:
     POKE 53280,5 : REM Set border colour to green - $D020
@@ -51,4 +103,4 @@ Game_Screen:
     REM The graphics should appear almost instant
     POKE 53265,PEEK(53265) OR 16 : REM 1 in bit 4 $D011
 
-Wait_Key: GOTO Wait_Key
+    RETURN
