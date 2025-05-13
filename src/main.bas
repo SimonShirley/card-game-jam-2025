@@ -66,11 +66,24 @@ Initialise_Program:
     DI% = 0 : REM Deck Index Value
     DIM SD%(51) : REM Shuffled Card Deck Order
     DIM TS%(51) : REM Temp Shuffle Array
+    
+    DIM PC%(9) : REM Player Covered Cards
+    DIM PU%(9) : REM Player Uncovered Cards    
 
+    DIM CC%(9) : REM Computer Covered Cards
+    DIM CU%(9) : REM Computer Uncovered Cards    
+
+    DIM DP%(42) : REM Discard Pile
+    DI% = -1    : REM Discard Pile Current Index
+
+    RD% = RND(-TI)
 
 
 Restart:
-    RD% = RND(-TI) : REM Re-seed the randomiser
+    CP% = 0    : REM Current Player - -1 = Computer, 0 = Player
+
+    PS% = 0    : REM Player Uncovered Count
+    CS% = 0    : REM Computer Uncovered Count
 
     POKE 53280,5 : REM Set border colour to green - $D020
     POKE 53281,5 : REM Set background colour to green - $D020
@@ -80,17 +93,120 @@ Restart:
 
     GOSUB Shuffle_Deck
 
+    RD% = RND(-TI) : REM Re-seed the randomiser
+
     GOSUB Game_Screen
 
-    FOR I = 0 TO 51
-        REM Set Current Card
-        DI% = I
-        
-        FOR J = 1 TO 300 : NEXT
-        
-        XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
-        GOSUB Print_Current_Card        
+    REM Deal Cards
+    FOR I = 0 TO 9
+        DI% = DI% + 1       : REM Set Next Card Index
+        PC%(I) = SD%(DI%)   : REM Allocate to Player
+        PU%(I) = 0
+
+        DI% = DI% + 1       : REM Set Next Card Index
+        CC%(I) = SD%(DI%)   : REM Allocate to Computer
+        CU%(I) = 0
     NEXT I
+
+    DI% = DI% + 1 : REM Set Next Card Index
+    CP% = NOT CP% : REM Set Next Player
+
+    FOR J = 1 TO 1000 : NEXT : REM Wait
+
+    CI% = SD%(DI%) : REM Get Next Card
+
+    REM Display First Card
+    XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
+    GOSUB Print_Current_Card
+
+    FOR J = 1 TO 300 : NEXT : REM Wait
+
+    IF RA% >= 10 THEN Discard_Current_Card
+
+    IF CP% THEN Process_Player_Card
+    GOTO Process_Computer_Card
+
+Process_Player_Card:
+    IF RA% >= 10 THEN Discard_Current_Card
+    
+    IF PU%(RA%) THEN Discard_Current_Card
+    GOSUB Print_Blank_Card
+
+    PU%(RA%) = -1
+
+    CO% = RA% - (INT(RA% / 5) * 5)
+    RO% = INT(RA% / 5)
+
+    XP% = (CO% * 6) + 3
+    YP% = (RO% * 6) + 14
+
+    GOSUB Set_Cursor_Position
+    
+    GOSUB Print_Current_Card
+
+    PS% = PS% + 1
+    IF PS% >= 10 THEN Wait_Key
+
+    CI% = PC%(RA%)
+
+    XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
+    GOSUB Print_Current_Card
+
+    FOR J = 1 TO 300 : NEXT : REM Wait
+
+    GOTO Process_Player_Card
+
+
+Process_Computer_Card:
+    IF RA% >= 10 THEN Discard_Current_Card
+    
+    IF CU%(RA%) THEN Discard_Current_Card
+    GOSUB Print_Blank_Card
+
+    CU%(RA%) = -1
+
+    CO% = RA% - (INT(RA% / 5) * 5)
+    RO% = INT(RA% / 5)
+
+    XP% = (CO% * 6) + 3
+    YP% = (RO% * 6) + 1
+
+    GOSUB Set_Cursor_Position
+    
+    GOSUB Print_Current_Card
+
+    CS% = CS% + 1
+    IF CS% >= 10 THEN Wait_Key
+
+    CI% = CC%(RA%)
+
+    XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
+    GOSUB Print_Current_Card
+
+    FOR J = 1 TO 300 : NEXT : REM Wait
+
+    GOTO Process_Computer_Card
+    
+
+Discard_Current_Card:
+    GOSUB Print_Blank_Card
+
+    XP% = 35 : YP% = 11 : GOSUB Set_Cursor_Position : REM Set Cursor
+    GOSUB Print_Current_Card
+
+    DI% = DI% + 1 : REM Set Next Card Index
+    CI% = SD%(DI%) : REM Get Next Card
+
+    XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
+    GOSUB Print_Current_Card
+
+    CP% = NOT CP%
+
+    FOR J = 1 TO 300 : NEXT : REM Wait    
+
+    IF CP% THEN Process_Player_Card
+    GOTO Process_Computer_Card
+
 
 Wait_Key: GOTO Wait_Key
 
@@ -145,7 +261,6 @@ Game_Screen:
     RETURN
 
 Print_Current_Card:
-    CI% = SD%(DI%) : REM Get Next Card
     GOSUB Get_Card_Value
     GOSUB Get_Cart_Suit
 
@@ -155,11 +270,12 @@ Print_Current_Card:
 Print_Current_Card__Rank:
     YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
     If RA% = 0  THEN PRINT " A " : GOTO Print_Current_Card__Suit
+    If RA% = 9  THEN PRINT "10 " : GOTO Print_Current_Card__Suit
     If RA% = 10 THEN PRINT " J " : GOTO Print_Current_Card__Suit
     If RA% = 11 THEN PRINT " Q " : GOTO Print_Current_Card__Suit
     If RA% = 12 THEN PRINT " K " : GOTO Print_Current_Card__Suit
 
-    TS$ = STR$(RA%) + " "
+    TS$ = STR$(RA% + 1) + " "
     PRINT TS$
 
 Print_Current_Card__Suit:
@@ -172,5 +288,20 @@ Print_Current_Card__Suit:
 Print_Current_Card__Final_Line:
     YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
     PRINT "   ";
+
+    RETURN
+
+Print_Blank_Card:
+    XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
+    PRINT "{green}{166}{166}{166}"
+
+    XP% = 35 : YP% = 21 : GOSUB Set_Cursor_Position : REM Set Cursor
+    PRINT "{166}{166}{166}"
+
+    XP% = 35 : YP% = 22 : GOSUB Set_Cursor_Position : REM Set Cursor
+    PRINT "{166}{166}{166}"
+
+    XP% = 35 : YP% = 23 : GOSUB Set_Cursor_Position : REM Set Cursor
+    PRINT "{166}{166}{166}"
 
     RETURN
