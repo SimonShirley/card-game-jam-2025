@@ -76,11 +76,11 @@ Update_Player_Display:
     IF NOT CP% THEN Update_Player_Display__Computer
 
 Update_Player_Display__Player:
-    PRINT "{rvs on}{green}{99}{99}{99}{99}{99}{127}{169}{127}{169}  PLAYER  TURN {127}{169}{127}{169}{99}{99}{99}{99}{rvs off}";
+    PRINT "{rvs on}{green}{171}{99}{99}{99}{99}{127}{169}{127}{169}  PLAYER  TURN {127}{169}{127}{169}{99}{99}{99}{99}{rvs off}";
     RETURN
 
 Update_Player_Display__Computer:
-    PRINT "{rvs on}{green}{99}{99}{99}{99}{99}{rvs off}{169}{127}{169}{127}{rvs on} COMPUTER TURN {rvs off}{169}{127}{169}{127}{rvs on}{99}{99}{99}{99}{rvs off}";
+    PRINT "{rvs on}{green}{171}{99}{99}{99}{99}{rvs off}{169}{127}{169}{127}{rvs on} COMPUTER TURN {rvs off}{169}{127}{169}{127}{rvs on}{99}{99}{99}{99}{rvs off}";
     RETURN
 
 
