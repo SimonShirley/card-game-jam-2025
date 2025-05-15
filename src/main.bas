@@ -57,6 +57,19 @@ Get_Random_Number:
     RD% = INT(RND(1) * RD%)
     RETURN
 
+Place_Card_In_Bank:
+    CO% = RA% - (INT(RA% / 5) * 5)
+    RO% = INT(RA% / 5)
+
+    XP% = (CO% * 6) + 3
+    YP% = (RO% * 6) + 1
+
+    IF CP% THEN YP% = YP% + 13
+
+    GOSUB Set_Cursor_Position    
+    GOSUB Print_Current_Card
+    RETURN
+
 
 Initialise_Program:
     VL = 1024  : REM $0400 - First Screen Location
@@ -108,6 +121,7 @@ Restart:
         CU%(I) = 0
     NEXT I
 
+Draw_Deck_Card:
     DI% = DI% + 1 : REM Set Next Card Index
     CP% = NOT CP% : REM Set Next Player
 
@@ -134,15 +148,7 @@ Process_Player_Card:
 
     PU%(RA%) = -1
 
-    CO% = RA% - (INT(RA% / 5) * 5)
-    RO% = INT(RA% / 5)
-
-    XP% = (CO% * 6) + 3
-    YP% = (RO% * 6) + 14
-
-    GOSUB Set_Cursor_Position
-    
-    GOSUB Print_Current_Card
+    GOSUB Place_Card_In_Bank
 
     PS% = PS% + 1
     IF PS% >= 10 THEN Wait_Key
@@ -165,15 +171,7 @@ Process_Computer_Card:
 
     CU%(RA%) = -1
 
-    CO% = RA% - (INT(RA% / 5) * 5)
-    RO% = INT(RA% / 5)
-
-    XP% = (CO% * 6) + 3
-    YP% = (RO% * 6) + 1
-
-    GOSUB Set_Cursor_Position
-    
-    GOSUB Print_Current_Card
+    GOSUB Place_Card_In_Bank
 
     CS% = CS% + 1
     IF CS% >= 10 THEN Wait_Key
@@ -194,18 +192,7 @@ Discard_Current_Card:
     XP% = 35 : YP% = 11 : GOSUB Set_Cursor_Position : REM Set Cursor
     GOSUB Print_Current_Card
 
-    DI% = DI% + 1 : REM Set Next Card Index
-    CI% = SD%(DI%) : REM Get Next Card
-
-    XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
-    GOSUB Print_Current_Card
-
-    CP% = NOT CP%
-
-    FOR J = 1 TO 300 : NEXT : REM Wait    
-
-    IF CP% THEN Process_Player_Card
-    GOTO Process_Computer_Card
+    GOTO Draw_Deck_Card
 
 
 Wait_Key: GOTO Wait_Key
