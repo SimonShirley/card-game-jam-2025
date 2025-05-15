@@ -70,6 +70,19 @@ Place_Card_In_Bank:
     GOSUB Print_Current_Card
     RETURN
 
+Update_Player_Display:
+    XP% = 0 : YP% = 12 : GOSUB Set_Cursor_Position : REM Set Cursor
+
+    IF NOT CP% THEN Update_Player_Display__Computer
+
+Update_Player_Display__Player:
+    PRINT "{rvs on}{green}{99}{99}{99}{99}{99}{127}{169}{127}{169}  PLAYER  TURN {127}{169}{127}{169}{99}{99}{99}{99}{rvs off}";
+    RETURN
+
+Update_Player_Display__Computer:
+    PRINT "{rvs on}{green}{99}{99}{99}{99}{99}{rvs off}{169}{127}{169}{127}{rvs on} COMPUTER TURN {rvs off}{169}{127}{169}{127}{rvs on}{99}{99}{99}{99}{rvs off}";
+    RETURN
+
 
 Initialise_Program:
     VL = 1024  : REM $0400 - First Screen Location
@@ -122,11 +135,15 @@ Restart:
     NEXT I
 
 Draw_Deck_Card:
-    DI% = DI% + 1 : REM Set Next Card Index
     CP% = NOT CP% : REM Set Next Player
 
     FOR J = 1 TO 1000 : NEXT : REM Wait
 
+    GOSUB Update_Player_Display
+
+    FOR J = 1 TO 1000 : NEXT : REM Wait
+
+    DI% = DI% + 1 : REM Set Next Card Index
     CI% = SD%(DI%) : REM Get Next Card
 
     REM Display First Card
@@ -220,7 +237,7 @@ Game_Screen:
     PRINT "R  {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}  {180}DISCARD";
     PRINT "   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}  {180}       ";
     PRINT "                                {180}  {166}{166}{166}  ";
-    PRINT "{127}{169}{127}{169}{127}{169}{127}{169}{127}{169}{127}{169}{127}{169}{127}{169}{127}{169}{127}{169}{127}{169}{127}{169}{127}{169}{127}{169}{127}{169}{127}{169}{180}  {166}{166}{166}  ";
+    PRINT "{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{180}  {166}{166}{166}  ";
     PRINT "                                {180}  {166}{166}{166}  ";
     PRINT "   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}  {180}  {166}{166}{166}  ";
     PRINT "   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}  {180}       ";
