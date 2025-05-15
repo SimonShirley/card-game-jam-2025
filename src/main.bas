@@ -87,9 +87,10 @@ Update_Player_Display__Computer:
 Initialise_Program:
     VL = 1024  : REM $0400 - First Screen Location
     CR = 55296 : REM $D800 - Colour RAM Base
+    
     RA% = 0 : REM Card Rank
     SU% = 0 : REM Card Suit - 0 - Spades, 1 - Diamonds, 2 - Clubs, 3 - Hearts
-    DI% = 0 : REM Deck Index Value
+
     DIM SD%(51) : REM Shuffled Card Deck Order
     DIM TS%(51) : REM Temp Shuffle Array
     
@@ -99,8 +100,10 @@ Initialise_Program:
     DIM CC%(9) : REM Computer Covered Cards
     DIM CU%(9) : REM Computer Uncovered Cards    
 
-    DIM DP%(42) : REM Discard Pile
-    DI% = -1    : REM Shuffled Deck Current Index
+    DIM DP%(41) : REM Discard Pile
+
+    SI% = -1    : REM Shuffled Deck Current Index
+    DI% = -1    : REM Discard Pile Current Index
 
     RD% = RND(-TI)
 
@@ -125,16 +128,16 @@ Restart:
 
     REM Deal Cards
     FOR I = 0 TO 9
-        DI% = DI% + 1       : REM Set Next Card Index
-        PC%(I) = SD%(DI%)   : REM Allocate to Player
+        SI% = SI% + 1       : REM Set Next Card Index
+        PC%(I) = SD%(SI%)   : REM Allocate to Player
         PU%(I) = 0
 
-        DI% = DI% + 1       : REM Set Next Card Index
-        CC%(I) = SD%(DI%)   : REM Allocate to Computer
+        SI% = SI% + 1       : REM Set Next Card Index
+        CC%(I) = SD%(SI%)   : REM Allocate to Computer
         CU%(I) = 0
     NEXT I
 
-Draw_Deck_Card:
+Ready_Up_Next_Player:
     CP% = NOT CP% : REM Set Next Player
 
     FOR J = 1 TO 1000 : NEXT : REM Wait
@@ -143,8 +146,73 @@ Draw_Deck_Card:
 
     FOR J = 1 TO 1000 : NEXT : REM Wait
 
-    DI% = DI% + 1 : REM Set Next Card Index
-    CI% = SD%(DI%) : REM Get Next Card
+    REM Check if Discard pile is empty
+    IF DI% = -1 THEN Draw_Card_From_Card_Stack
+
+    REM Check rank of discarded card
+    CI% = DP%(DI%)
+    GOSUB Get_Card_Value
+
+    REM If the card is A - 10, we may be able to claim it
+    IF RA% > 9 THEN Draw_Card_From_Card_Stack
+    IF NOT CP% THEN Check_Computer_Card_Bank
+
+Check_Player_Card_Bank:
+    REM If card has already been turned, draw from the stack
+    IF PU%(RA%) THEN Draw_Card_From_Card_Stack
+
+    REM Otherwise, use the discarded card
+    GOTO Get_Card_From_Discard_Pile
+
+Check_Computer_Card_Bank:
+    REM If card has already been turned, draw from the stack
+    IF CU%(RA%) THEN Draw_Card_From_Card_Stack
+
+    REM Otherwise, use the discarded card
+    GOTO Get_Card_From_Discard_Pile
+
+Get_Card_From_Discard_Pile:
+    DI% = DI% - 1
+    IF DI% < 0 THEN DI% = -1
+
+    IF DI% < 0 THEN GOSUB Blank_Discard_Pile : GOTO Get_Discarded_Card
+
+    REM Re-print the last card on the discard pile
+    CI% = DP%(DI%)
+
+    XP% = 35 : YP% = 11 : GOSUB Set_Cursor_Position : REM Set Cursor
+    GOSUB Print_Current_Card
+
+Get_Discarded_Card:
+    REM Move the discarded card onto the current pile
+    CI% = DP%(DI% + 1)
+
+    XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
+    GOSUB Print_Current_Card
+
+    FOR J = 1 TO 300 : NEXT : REM Wait
+
+    GOTO Proccess_Card
+
+Blank_Discard_Pile:
+    XP% = 35 : YP% = 11 : GOSUB Set_Cursor_Position : REM Set Cursor
+    PRINT "{166}{166}{166}"
+
+    YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
+    PRINT "{166}{166}{166}"
+
+    YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
+    PRINT "{166}{166}{166}"
+
+    YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
+    PRINT "{166}{166}{166}"
+
+    RETURN
+
+
+Draw_Card_From_Card_Stack:
+    SI% = SI% + 1 : REM Set Next Card Index
+    CI% = SD%(SI%) : REM Get Next Card
 
     REM Display First Card
     XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
@@ -154,6 +222,7 @@ Draw_Deck_Card:
 
     IF RA% >= 10 THEN Discard_Current_Card
 
+Proccess_Card:
     IF CP% THEN Process_Player_Card
     GOTO Process_Computer_Card
 
@@ -209,7 +278,10 @@ Discard_Current_Card:
     XP% = 35 : YP% = 11 : GOSUB Set_Cursor_Position : REM Set Cursor
     GOSUB Print_Current_Card
 
-    GOTO Draw_Deck_Card
+    DI% = DI% + 1
+    DP%(DI%) = CI%
+
+    GOTO Ready_Up_Next_Player
 
 
 Wait_Key: GOTO Wait_Key
