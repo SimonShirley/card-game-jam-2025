@@ -58,13 +58,13 @@ Get_Random_Number:
     RETURN
 
 Place_Card_In_Bank:
-    CO% = RA% - (INT(RA% / 5) * 5)
-    RO% = INT(RA% / 5)
+    CO% = RA% - (INT(RA% / 5) * 5) : REM Get the Column Index 
+    RO% = INT(RA% / 5) : REM Get the Row Index
 
-    XP% = (CO% * 6) + 3
-    YP% = (RO% * 6) + 1
+    XP% = (CO% * 6) + 3 : REM Convert Column Index into Character position
+    YP% = (RO% * 6) + 1 : REM Convert Row Index into screen line
 
-    IF CP% THEN YP% = YP% + 13
+    IF CP% THEN YP% = YP% + 13 : REM Move the screen line into player set
 
     GOSUB Set_Cursor_Position    
     GOSUB Print_Current_Card
@@ -100,7 +100,7 @@ Initialise_Program:
     DIM CU%(9) : REM Computer Uncovered Cards    
 
     DIM DP%(42) : REM Discard Pile
-    DI% = -1    : REM Discard Pile Current Index
+    DI% = -1    : REM Shuffled Deck Current Index
 
     RD% = RND(-TI)
 
@@ -112,7 +112,7 @@ Restart:
     CS% = 0    : REM Computer Uncovered Count
 
     POKE 53280,5 : REM Set border colour to green - $D020
-    POKE 53281,5 : REM Set background colour to green - $D020
+    POKE 53281,5 : REM Set background colour to green - $D021
 
     PRINT "{clr}{home}{white}Shuffling deck..."
     PRINT
