@@ -70,6 +70,34 @@ Place_Card_In_Bank:
     GOSUB Print_Current_Card
     RETURN
 
+Highlight_Card_Bank_Position:
+    REM Requires Highlight Position - HP%
+    REM Requires Highlight Mode - HM% -> HM% = 1 Print, 0 - Remove
+    REM Uses CP% for Player / Computer calculation
+    IF HP% = 10 THEN XP% = 34 : YP% = 1  : GOTO Highlight_Card_Bank_Position__Set_Position
+    IF HP% = 11 THEN XP% = 34 : YP% = 10 : GOTO Highlight_Card_Bank_Position__Set_Position
+
+    CO% = HP% - (INT(HP% / 5) * 5) : REM Get the Column Index 
+    RO% = INT(HP% / 5) : REM Get the Row Index
+
+    XP% = (CO% * 6) + 2 : REM Convert Column Index into Character position
+    YP% = (RO% * 6)     : REM Convert Row Index into screen line
+
+    IF CP% THEN YP% = YP% + 13 : REM Move the screen line into player set
+
+Highlight_Card_Bank_Position__Set_Position:
+    GOSUB Set_Cursor_Position    
+    
+    IF HM% THEN PRINT "{rvs on}{green}{117}   {105}{rvs off}" : GOTO Highlight_Card_Bank_Position__Set_Bottom_Position
+    PRINT "{rvs on}{green}     {rvs off}"
+
+Highlight_Card_Bank_Position__Set_Bottom_Position:
+    YP% = YP% + 5 : GOSUB Set_Cursor_Position
+
+    IF HM% THEN PRINT "{rvs on}{green}{106}   {107}{rvs off}"; : RETURN
+    PRINT "{rvs on}{green}     {rvs off}";
+    RETURN
+
 Update_Player_Display:
     XP% = 0 : YP% = 12 : GOSUB Set_Cursor_Position : REM Set Cursor
 
@@ -144,7 +172,10 @@ Ready_Up_Next_Player:
 
     GOSUB Update_Player_Display
 
-    FOR J = 1 TO 1000 : NEXT : REM Wait
+    REM Highlight Card Stack
+    HP% = 10 : HM% = -1 : GOSUB Highlight_Card_Bank_Position
+
+    FOR J = 1 TO 300 : NEXT : REM Wait
 
     REM Check if Discard pile is empty
     IF DI% = -1 THEN Draw_Card_From_Card_Stack
@@ -162,9 +193,15 @@ Ready_Up_Next_Player:
     IF NOT CP% AND CU%(RA%) THEN Draw_Card_From_Card_Stack
 
     REM Otherwise, use the discarded card (continue)
+    HP% = 11 : HM% = -1 : GOSUB Highlight_Card_Bank_Position
+
+    FOR J = 1 TO 300 : NEXT : REM Wait
 
 
 Get_Card_From_Discard_Pile:
+    HP% = 10 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
+    HP% = 11 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
+
     DI% = DI% - 1
     IF DI% < 0 THEN DI% = -1 : GOTO Blank_Discard_Pile
 
@@ -185,11 +222,22 @@ Get_Discarded_Card:
     XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
     GOSUB Print_Current_Card
 
+    HP% = 10 : REM Set Card to Highlight
+    HM% = 0 : REM Set Highlight Mode
+    GOSUB Highlight_Card_Bank_Position
+
+    HP% = 11 : REM Set Card to Highlight
+    HM% = 0 : REM Set Highlight Mode
+    GOSUB Highlight_Card_Bank_Position
+
     FOR J = 1 TO 300 : NEXT : REM Wait
 
     GOTO Process_Card
 
 Draw_Card_From_Card_Stack:
+    HP% = 10 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
+    HP% = 11 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
+
     SI% = SI% + 1 : REM Set Next Card Index
     CI% = SD%(SI%) : REM Get Next Card
 
@@ -208,11 +256,18 @@ Process_Player_Card:
     IF RA% >= 10 THEN Discard_Current_Card
     
     IF PU%(RA%) THEN Discard_Current_Card
+
+    HP% = 10  : HM% = 0  : GOSUB Highlight_Card_Bank_Position
+    HP% = 11  : HM% = 0  : GOSUB Highlight_Card_Bank_Position
+    HP% = RA% : HM% = -1 : GOSUB Highlight_Card_Bank_Position
+
     YP% = 20 : GOSUB Print_Blank_Card
 
     PU%(RA%) = -1
 
     GOSUB Place_Card_In_Bank
+
+    HP% = RA% : HM% = 0 : GOSUB Highlight_Card_Bank_Position
 
     PS% = PS% + 1
     IF PS% >= 10 THEN Wait_Key
@@ -231,11 +286,18 @@ Process_Computer_Card:
     IF RA% >= 10 THEN Discard_Current_Card
     
     IF CU%(RA%) THEN Discard_Current_Card
+
+    HP% = 10  : HM% = 0  : GOSUB Highlight_Card_Bank_Position
+    HP% = 11  : HM% = 0  : GOSUB Highlight_Card_Bank_Position
+    HP% = RA% : HM% = -1 : GOSUB Highlight_Card_Bank_Position
+
     YP% = 20 : GOSUB Print_Blank_Card
 
     CU%(RA%) = -1
 
     GOSUB Place_Card_In_Bank
+
+    HP% = RA% : HM% = 0 : GOSUB Highlight_Card_Bank_Position
 
     CS% = CS% + 1
     IF CS% >= 10 THEN Wait_Key
@@ -251,6 +313,8 @@ Process_Computer_Card:
     
 
 Discard_Current_Card:
+    HP% = 11 : HM% = -1 : GOSUB Highlight_Card_Bank_Position
+
     YP% = 20 : GOSUB Print_Blank_Card
 
     XP% = 35 : YP% = 11 : GOSUB Set_Cursor_Position : REM Set Cursor
@@ -258,6 +322,8 @@ Discard_Current_Card:
 
     DI% = DI% + 1
     DP%(DI%) = CI%
+
+    HP% = 11 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
 
     GOTO Ready_Up_Next_Player
 
