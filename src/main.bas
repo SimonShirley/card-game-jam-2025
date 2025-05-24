@@ -3,7 +3,7 @@ GOTO Initialise_Program
 Set_Cursor_Position:
     REM Set Cursor Position to X=XP%, Y=YP%
     REM Clear Flags
-    REM CALL PLOT kernal routine
+    REM CALL PLOT kernal routine - $FFF0
     POKE 781,YP% : POKE 782,XP% : POKE 783,0 : SYS 65520
     RETURN
 
@@ -150,49 +150,30 @@ Ready_Up_Next_Player:
     IF DI% = -1 THEN Draw_Card_From_Card_Stack
 
     REM Check rank of discarded card
-    CI% = DP%(DI%)
-    GOSUB Get_Card_Value
+    CI% = DP%(DI%) : GOSUB Get_Card_Value
 
     REM If the card is A - 10, we may be able to claim it
     IF RA% > 9 THEN Draw_Card_From_Card_Stack
-    IF NOT CP% THEN Check_Computer_Card_Bank
 
-Check_Player_Card_Bank:
     REM If card has already been turned, draw from the stack
-    IF PU%(RA%) THEN Draw_Card_From_Card_Stack
+    REM Check Player Cards - CP% = -1 means player turn
+    IF CP% AND PU%(RA%) THEN Draw_Card_From_Card_Stack
+    REM Check Computer Cards - CP% = 0 means computer turn
+    IF NOT CP% AND CU%(RA%) THEN Draw_Card_From_Card_Stack
 
-    REM Otherwise, use the discarded card
-    GOTO Get_Card_From_Discard_Pile
+    REM Otherwise, use the discarded card (continue)
 
-Check_Computer_Card_Bank:
-    REM If card has already been turned, draw from the stack
-    IF CU%(RA%) THEN Draw_Card_From_Card_Stack
-
-    REM Otherwise, use the discarded card
-    GOTO Get_Card_From_Discard_Pile
 
 Get_Card_From_Discard_Pile:
     DI% = DI% - 1
-    IF DI% < 0 THEN DI% = -1
-
-    IF DI% < 0 THEN GOSUB Blank_Discard_Pile : GOTO Get_Discarded_Card
+    IF DI% < 0 THEN DI% = -1 : GOTO Blank_Discard_Pile
 
     REM Re-print the last card on the discard pile
     CI% = DP%(DI%)
 
     XP% = 35 : YP% = 11 : GOSUB Set_Cursor_Position : REM Set Cursor
     GOSUB Print_Current_Card
-
-Get_Discarded_Card:
-    REM Move the discarded card onto the current pile
-    CI% = DP%(DI% + 1)
-
-    XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
-    GOSUB Print_Current_Card
-
-    FOR J = 1 TO 300 : NEXT : REM Wait
-
-    GOTO Proccess_Card
+    GOTO Get_Discarded_Card
 
 Blank_Discard_Pile:
     XP% = 35 : YP% = 11 : GOSUB Set_Cursor_Position : REM Set Cursor
@@ -207,8 +188,16 @@ Blank_Discard_Pile:
     YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
     PRINT "{166}{166}{166}"
 
-    RETURN
+Get_Discarded_Card:
+    REM Move the discarded card onto the current pile
+    CI% = DP%(DI% + 1)
 
+    XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
+    GOSUB Print_Current_Card
+
+    FOR J = 1 TO 300 : NEXT : REM Wait
+
+    GOTO Process_Card
 
 Draw_Card_From_Card_Stack:
     SI% = SI% + 1 : REM Set Next Card Index
@@ -222,9 +211,8 @@ Draw_Card_From_Card_Stack:
 
     IF RA% >= 10 THEN Discard_Current_Card
 
-Proccess_Card:
-    IF CP% THEN Process_Player_Card
-    GOTO Process_Computer_Card
+Process_Card:
+    IF NOT CP% THEN Process_Computer_Card
 
 Process_Player_Card:
     IF RA% >= 10 THEN Discard_Current_Card
