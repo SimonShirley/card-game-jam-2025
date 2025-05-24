@@ -176,17 +176,7 @@ Get_Card_From_Discard_Pile:
     GOTO Get_Discarded_Card
 
 Blank_Discard_Pile:
-    XP% = 35 : YP% = 11 : GOSUB Set_Cursor_Position : REM Set Cursor
-    PRINT "{166}{166}{166}"
-
-    YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
-    PRINT "{166}{166}{166}"
-
-    YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
-    PRINT "{166}{166}{166}"
-
-    YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
-    PRINT "{166}{166}{166}"
+    YP% = 11 : GOSUB Print_Blank_Card
 
 Get_Discarded_Card:
     REM Move the discarded card onto the current pile
@@ -218,7 +208,7 @@ Process_Player_Card:
     IF RA% >= 10 THEN Discard_Current_Card
     
     IF PU%(RA%) THEN Discard_Current_Card
-    GOSUB Print_Blank_Card
+    YP% = 20 : GOSUB Print_Blank_Card
 
     PU%(RA%) = -1
 
@@ -241,7 +231,7 @@ Process_Computer_Card:
     IF RA% >= 10 THEN Discard_Current_Card
     
     IF CU%(RA%) THEN Discard_Current_Card
-    GOSUB Print_Blank_Card
+    YP% = 20 : GOSUB Print_Blank_Card
 
     CU%(RA%) = -1
 
@@ -261,7 +251,7 @@ Process_Computer_Card:
     
 
 Discard_Current_Card:
-    GOSUB Print_Blank_Card
+    YP% = 20 : GOSUB Print_Blank_Card
 
     XP% = 35 : YP% = 11 : GOSUB Set_Cursor_Position : REM Set Cursor
     GOSUB Print_Current_Card
@@ -356,16 +346,13 @@ Print_Current_Card__Final_Line:
     RETURN
 
 Print_Blank_Card:
-    XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
-    PRINT "{green}{166}{166}{166}"
-
-    XP% = 35 : YP% = 21 : GOSUB Set_Cursor_Position : REM Set Cursor
-    PRINT "{166}{166}{166}"
-
-    XP% = 35 : YP% = 22 : GOSUB Set_Cursor_Position : REM Set Cursor
-    PRINT "{166}{166}{166}"
-
-    XP% = 35 : YP% = 23 : GOSUB Set_Cursor_Position : REM Set Cursor
-    PRINT "{166}{166}{166}"
+    REM Requires YP% Set
+    XP% = 35 : YP% = YP% - 1
+    
+    FOR BC = 0 TO 3
+        REM Set Cursor Position
+        YP% = YP% + 1 : GOSUB Set_Cursor_Position         
+        PRINT "{green}{166}{166}{166}"
+    NEXT BC
 
     RETURN
