@@ -149,6 +149,48 @@ Initialise_Program:
 
     RD% = RND(-TI)
 
+    PO% = 0        : REM Cursor Position
+    DIM CP%(22,1)  : REM Cursor Co-ordinates
+
+    CP%(0,0) = 0 : CP%(0,1) = 0
+    CP%(1,0) = 0 : CP%(1,1) = 0
+    CP%(2,0) = 0 : CP%(2,1) = 0
+    CP%(3,0) = 0 : CP%(3,1) = 0
+    CP%(4,0) = 0 : CP%(4,1) = 0
+    CP%(5,0) = 0 : CP%(5,1) = 0
+    CP%(6,0) = 0 : CP%(6,1) = 0
+    CP%(7,0) = 0 : CP%(7,1) = 0
+    CP%(8,0) = 0 : CP%(8,1) = 0
+    CP%(9,0) = 0 : CP%(9,1) = 0
+    CP%(10,0) = 0 : CP%(10,1) = 0
+    CP%(11,0) = 0 : CP%(11,1) = 0
+    CP%(12,0) = 0 : CP%(12,1) = 0
+    CP%(13,0) = 0 : CP%(13,1) = 0
+    CP%(14,0) = 0 : CP%(14,1) = 0
+    CP%(15,0) = 0 : CP%(15,1) = 0
+    CP%(16,0) = 0 : CP%(16,1) = 0
+    CP%(17,0) = 0 : CP%(17,1) = 0
+    CP%(18,0) = 0 : CP%(18,1) = 0
+    CP%(19,0) = 0 : CP%(19,1) = 0
+    CP%(20,0) = 0 : CP%(20,1) = 0
+    CP%(21,0) = 0 : CP%(21,1) = 0
+    CP%(22,0) = 0 : CP%(22,1) = 0
+
+Load_Sprite_Data:
+    VIC = 13*4096   :REM THIS IS WHERE THE VIC REGISTERS BEGIN
+    POKE VIC+21,1   :REM ENABLE SPRITE 0
+    REM POKE VIC+23,1   :REM EXPAND SPRITE 0 IN Y
+    REM POKE VIC+29,1   :REM EXPAND SPRITE 0 IN X
+    POKE 2040,255   :REM SET SPRITE 0'S POINTER
+    POKE VIC+0,97   :REM SET SPRITE 0'S X POSITION
+    POKE VIC+1,180  :REM SET SPRITE 0'S Y POSITION
+    POKE VIC+39,3   :REM SET SPRITE 0'S COLOR
+    RESTORE
+    FOR Y = 0 TO 62 :REM BYTE COUNTER WITH SPRITE LOOP
+    READ A          :REM READ IN A BYTE
+    POKE 255*64+Y,A :REM STORE THE DATA IN SPRITE AREA
+    NEXT Y
+
 
 Restart:
     CP% = 0    : REM Current Player - -1 = Computer, 0 = Player
@@ -465,3 +507,27 @@ Print_Blank_Card:
     NEXT BC
 
     RETURN
+
+Sprite_Data:
+    DATA 0,0,0      : REM ........ ........ ........
+    DATA 0,0,0      : REM ........ ........ ........
+    DATA 0,6,0      : REM ........ .....XX. ........
+    DATA 0,15,0     : REM ........ ....XXXX ........
+    DATA 0,11,0     : REM ........ ....X.XX ........
+    DATA 0,11,0     : REM ........ ....X.XX ........
+    DATA 0,11,0     : REM ........ ....X.XX ........
+    DATA 0,59,0     : REM ........ ..XXX.XX ........
+    DATA 1,251,0    : REM .......X XXXXX.XX ........
+    DATA 15,219,0   : REM ....XXXX XX.XX.XX ........
+    DATA 30,219,112 : REM ...XXXX. XX.XX.XX .XXX....
+    DATA 22,219,208 : REM ...X.XX. XX.XX.XX XX.X....
+    DATA 22,219,176 : REM ...X.XX. XX.XX.XX X.XX....
+    DATA 22,219,96  : REM ...X.XX. XX.XX.XX .XX.....
+    DATA 31,255,64  : REM ...XXXXX XXXXXXXX .X......
+    DATA 31,255,192 : REM ...XXXXX XXXXXXXX XX......
+    DATA 15,255,128 : REM ....XXXX XXXXXXXX X.......
+    DATA 14,247,128 : REM ....XXX. XXXX.XXX X.......
+    DATA 7,15,0     : REM .....XXX ....XXXX ........
+    DATA 7,255,0    : REM .....XXX XXXXXXXX ........
+    DATA 3,254,0    : REM ......XX XXXXXXX. ........
+    
