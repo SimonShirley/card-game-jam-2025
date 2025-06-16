@@ -179,6 +179,7 @@ Restart:
 
 Ready_Up_Next_Player:
     CP% = NOT CP% : REM Set Next Player
+    DA% = 0 : REM Discard Available Flag
 
     FOR J = 1 TO 1000 : NEXT : REM Wait
 
@@ -190,17 +191,21 @@ Ready_Up_Next_Player:
     FOR J = 1 TO 300 : NEXT : REM Wait
 
     REM Check if Discard pile is empty
-    IF DI% = -1 THEN Draw_Card_From_Card_Stack
+    IF DI% = -1 AND NOT CP% THEN Draw_Card_From_Card_Stack
+    IF DI% = -1 AND CP% THEN Wait_Stack_Key
 
     REM Check rank of discarded card
     CI% = DP%(DI%) : GOSUB Get_Card_Value
 
+    REM Set Discard Pile Available
     REM If the card is A - 10, we may be able to claim it
-    IF RA% > 9 THEN Draw_Card_From_Card_Stack
+    IF RA% <= 9 THEN DA% = -1 
 
-    REM If card has already been turned, draw from the stack
-    REM Check Player Cards - CP% = -1 means player turn
-    IF CP% AND PU%(RA%) THEN Draw_Card_From_Card_Stack
+    IF CP% THEN Do_Player_Turn
+
+Do_Computer_Turn:
+    IF NOT DA% AND NOT CP% THEN Draw_Card_From_Card_Stack
+
     REM Check Computer Cards - CP% = 0 means computer turn
     IF NOT CP% AND CU%(RA%) THEN Draw_Card_From_Card_Stack
 
@@ -208,7 +213,6 @@ Ready_Up_Next_Player:
     HP% = 11 : HM% = -1 : GOSUB Highlight_Card_Bank_Position
 
     FOR J = 1 TO 300 : NEXT : REM Wait
-
 
 Get_Card_From_Discard_Pile:
     HP% = 10 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
@@ -292,6 +296,40 @@ Process_Player_Card:
     FOR J = 1 TO 300 : NEXT : REM Wait
 
     GOTO Process_Player_Card
+
+Do_Player_Turn:
+    IF NOT DA% THEN Wait_Stack_Key
+
+    REM If card has already been turned, draw from the stack
+    REM Check Player Cards - CP% = -1 means player turn
+    IF CP% AND PU%(RA%) THEN DA% = 0
+
+Wait_Stack_Key:
+    GET K$
+
+    IF DA% AND HP% = 10 AND K$ = "S" THEN GOSUB Highlight_Discard_Pile
+    IF DA% AND HP% = 11 AND K$ = "W" THEN GOSUB Highlight_Stack_Pile
+    IF K$ = CHR$(13) THEN Process_Stack_Input
+
+    GOTO Wait_Stack_Key
+
+Highlight_Stack_Pile:
+    REM Remove Highlight From Card Stack
+    HP% = 11 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
+    HP% = 10 : HM% = -1 : GOSUB Highlight_Card_Bank_Position
+    
+    RETURN
+
+Highlight_Discard_Pile:
+    REM Remove Highlight From Card Stack
+    HP% = 10 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
+    HP% = 11 : HM% = -1 : GOSUB Highlight_Card_Bank_Position
+    
+    RETURN
+
+Process_Stack_Input:
+    IF HP% = 10 THEN Draw_Card_From_Card_Stack
+    IF HP% = 11 THEN Get_Card_From_Discard_Pile
 
 
 Process_Computer_Card:
