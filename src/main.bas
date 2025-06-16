@@ -263,18 +263,62 @@ Draw_Card_From_Card_Stack:
 
     FOR J = 1 TO 300 : NEXT : REM Wait
 
-    IF RA% >= 10 THEN Discard_Current_Card
+    IF RA% >= 10 AND NOT CP% THEN Discard_Current_Card
 
 Process_Card:
     IF NOT CP% THEN Process_Computer_Card
 
 Process_Player_Card:
-    IF RA% >= 10 THEN Discard_Current_Card
-    
-    IF PU%(RA%) THEN Discard_Current_Card
+    REM Set Cursor to player Ace position
+    HP% = 0 : HM% = -1 : GOSUB Highlight_Card_Bank_Position
 
-    HP% = 10  : HM% = 0  : GOSUB Highlight_Card_Bank_Position
-    HP% = 11  : HM% = 0  : GOSUB Highlight_Card_Bank_Position
+Wait_Process_Player_Card:
+    GET K$
+
+    IF HP% = 11 AND K$ = CHR$(13) THEN Discard_Current_Card
+
+    IF HP% < 5 AND K$ = "S" THEN GOSUB Move_Marker_Down : GOTO Wait_Process_Player_Card
+    IF HP% >= 5 AND HP% < 10 AND K$ = "W" THEN GOSUB Move_Marker_Up : GOTO Wait_Process_Player_Card
+    IF HP% >= 0 AND HP% < 12 AND K$ = "D" THEN GOSUB Move_Marker_Right : GOTO Wait_Process_Player_Card
+    IF HP% > 0 AND HP% < 12 AND K$ = "A" THEN GOSUB Move_Marker_Left
+
+    IF RA% >= 10 THEN Wait_Process_Player_Card
+    IF HP% = RA% AND RA% < 10 AND NOT PU%(RA%) AND K$ = CHR$(13) THEN Place_Player_Card_In_Bank
+
+    GOTO Wait_Process_Player_Card
+
+
+Move_Marker_Down:
+    HM% = 0 : GOSUB Highlight_Card_Bank_Position
+    HP% = HP% + 5 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
+    RETURN
+
+Move_Marker_Up:
+    HM% = 0 : GOSUB Highlight_Card_Bank_Position
+    HP% = HP% - 5 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
+    RETURN
+
+Move_Marker_Left:
+    IF HP% < 0 OR HP% = 5 THEN RETURN
+
+    HM% = 0 : GOSUB Highlight_Card_Bank_Position    
+
+    IF HP% = 11 THEN HP% = 5
+
+    HP% = HP% - 1 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
+    RETURN
+
+Move_Marker_Right:
+    IF HP% > 10 THEN RETURN
+
+    HM% = 0 : GOSUB Highlight_Card_Bank_Position
+
+    IF HP% = 4 OR HP% >= 9 THEN HP% = 10
+
+    HP% = HP% + 1 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
+    RETURN
+
+Place_Player_Card_In_Bank:
     HP% = RA% : HM% = -1 : GOSUB Highlight_Card_Bank_Position
 
     YP% = 20 : GOSUB Print_Blank_Card
