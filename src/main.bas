@@ -268,24 +268,23 @@ Draw_Card_From_Card_Stack:
 Process_Card:
     IF NOT CP% THEN Process_Computer_Card
 
-Process_Player_Card:
-    REM Set Cursor to player Ace position
-    HP% = 0 : HM% = -1 : GOSUB Highlight_Card_Bank_Position
+    REM Set Cursor to player discard pile position
+    GOSUB Highlight_Discard_Pile
 
-Wait_Process_Player_Card:
+Process_Player_Card:
     GET K$
 
     IF HP% = 11 AND K$ = CHR$(13) THEN Discard_Current_Card
 
-    IF HP% < 5 AND K$ = "S" THEN GOSUB Move_Marker_Down : GOTO Wait_Process_Player_Card
-    IF HP% >= 5 AND HP% < 10 AND K$ = "W" THEN GOSUB Move_Marker_Up : GOTO Wait_Process_Player_Card
-    IF HP% >= 0 AND HP% < 12 AND K$ = "D" THEN GOSUB Move_Marker_Right : GOTO Wait_Process_Player_Card
-    IF HP% > 0 AND HP% < 12 AND K$ = "A" THEN GOSUB Move_Marker_Left
+    IF HP% < 5 AND K$ = "S" THEN GOSUB Move_Marker_Down : GOTO Process_Player_Card
+    IF HP% >= 5 AND HP% < 10 AND K$ = "W" THEN GOSUB Move_Marker_Up : GOTO Process_Player_Card
+    IF HP% >= 0 AND HP% < 12 AND K$ = "D" THEN GOSUB Move_Marker_Right : GOTO Process_Player_Card
+    IF HP% > 0 AND HP% < 12 AND K$ = "A" THEN GOSUB Move_Marker_Left : GOTO Process_Player_Card
 
-    IF RA% >= 10 THEN Wait_Process_Player_Card
+    IF RA% >= 10 THEN Process_Player_Card
     IF HP% = RA% AND RA% < 10 AND NOT PU%(RA%) AND K$ = CHR$(13) THEN Place_Player_Card_In_Bank
 
-    GOTO Wait_Process_Player_Card
+    GOTO Process_Player_Card
 
 
 Move_Marker_Down:
@@ -319,8 +318,6 @@ Move_Marker_Right:
     RETURN
 
 Place_Player_Card_In_Bank:
-    HP% = RA% : HM% = -1 : GOSUB Highlight_Card_Bank_Position
-
     YP% = 20 : GOSUB Print_Blank_Card
 
     PU%(RA%) = -1
@@ -338,6 +335,9 @@ Place_Player_Card_In_Bank:
     GOSUB Print_Current_Card
 
     FOR J = 1 TO 300 : NEXT : REM Wait
+
+    REM Re-highlight current card position
+    HM% = -1 : GOSUB Highlight_Card_Bank_Position
 
     GOTO Process_Player_Card
 
