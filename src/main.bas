@@ -11,21 +11,20 @@ Set_Cursor_Position:
 Shuffle_Deck:
     REM Reset Deck
     FOR I = 0 TO 51
-        TS%(I) = I
-        DP%(I) = -1
+        DP%(I) = I
     NEXT I
 
     FOR I = 0 TO 51
         RD% = 52 - I
         GOSUB Get_Random_Number
 
-        SD%(I) = TS%(RD%) : REM Get card from deck
+        SD%(I) = DP%(RD%) : REM Get card from deck
 
         IF RD% >= 51 THEN Shuffle_Deck__Continue
         
         REM Slide cards along one
         FOR J = RD% TO 50
-            TS%(J) = TS%(J + 1)
+            DP%(J) = DP%(J + 1)
         NEXT J
 
 Shuffle_Deck__Continue:
@@ -167,7 +166,6 @@ Initialise_Program:
     SU% = 0 : REM Card Suit - 0 - Spades, 1 - Diamonds, 2 - Clubs, 3 - Hearts
 
     DIM SD%(51) : REM Shuffled Card Deck Order
-    DIM TS%(51) : REM Temp Shuffle Array
     
     DIM PC%(9) : REM Player Covered Cards
     DIM PU%(9) : REM Player Uncovered Cards    
