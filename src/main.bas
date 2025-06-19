@@ -12,6 +12,7 @@ Shuffle_Deck:
     REM Reset Deck
     FOR I = 0 TO 51
         TS%(I) = I
+        DP%(I) = -1
     NEXT I
 
     FOR I = 0 TO 51
@@ -44,6 +45,38 @@ Shuffle_Deck__Continue:
         YP% = YP% + 1 : GOSUB Set_Cursor_Position
         PRINT "{rvs on}{blue}{173}{99}{189}{green}{rvs off}";
     NEXT I
+
+    RETURN
+
+Shuffle_Discards:
+    REM Reset Deck
+    FOR I = 0 TO 51
+        SD%(I) = -1
+    NEXT I
+
+    FOR I = 0 TO DI%
+        RD% = (DI% + 1) - I
+        GOSUB Get_Random_Number
+
+        SD%(I) = DP%(RD%) : REM Get card from discard pile
+
+        IF RD% >= DI% THEN Shuffle_Discards__Continue
+        
+        REM Slide cards along one
+        FOR J = RD% TO DI% - 1
+            DP%(J) = DP%(J + 1)
+        NEXT J
+
+Shuffle_Discards__Continue:
+    NEXT I
+
+    REM Reset Discard Pile
+    FOR I = 0 TO 51
+        DP%(I) = -1
+    NEXT I
+
+    SI% = DI% + 1 : REM Reset Shuffled Deck Index
+    DI% = -1 : REM Reset Discard Pile Index
 
     RETURN
 
@@ -142,9 +175,9 @@ Initialise_Program:
     DIM CC%(9) : REM Computer Covered Cards
     DIM CU%(9) : REM Computer Uncovered Cards    
 
-    DIM DP%(41) : REM Discard Pile
+    DIM DP%(51) : REM Discard Pile
 
-    SI% = -1    : REM Shuffled Deck Current Index
+    SI% = 52    : REM Shuffled Deck Current Index
     DI% = -1    : REM Discard Pile Current Index
 
     RD% = RND(-TI)
@@ -168,11 +201,11 @@ Restart:
 
     REM Deal Cards
     FOR I = 0 TO 9
-        SI% = SI% + 1       : REM Set Next Card Index
+        SI% = SI% - 1       : REM Set Next Card Index
         PC%(I) = SD%(SI%)   : REM Allocate to Player
         PU%(I) = 0
 
-        SI% = SI% + 1       : REM Set Next Card Index
+        SI% = SI% - 1       : REM Set Next Card Index
         CC%(I) = SD%(SI%)   : REM Allocate to Computer
         CU%(I) = 0
     NEXT I
@@ -254,7 +287,9 @@ Draw_Card_From_Card_Stack:
     HP% = 10 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
     HP% = 11 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
 
-    SI% = SI% + 1 : REM Set Next Card Index
+    IF SI% <= 0 THEN GOSUB Shuffle_Discards
+
+    SI% = SI% - 1 : REM Set Next Card Index
     CI% = SD%(SI%) : REM Get Next Card
 
     REM Display First Card
