@@ -33,21 +33,16 @@ Shuffle_Deck__Continue:
         IF I >= 26 THEN YP% = YP% + 2
         GOSUB Set_Cursor_Position
 
-        PRINT "{rvs on}{blue}{176}{99}{174}{green}{rvs off}";
-
-        YP% = YP% + 1 : GOSUB Set_Cursor_Position
-        PRINT "{rvs on}{blue}{125}{166}{125}{green}{rvs off}";
-
-        YP% = YP% + 1 : GOSUB Set_Cursor_Position
-        PRINT "{rvs on}{blue}{125}{166}{125}{green}{rvs off}";
-
-        YP% = YP% + 1 : GOSUB Set_Cursor_Position
-        PRINT "{rvs on}{blue}{173}{99}{189}{green}{rvs off}";
+        GOSUB Print_Card_Back
     NEXT I
 
     RETURN
 
 Shuffle_Discards:
+    YP% = 11 : GOSUB Print_Blank_Card
+
+    GOSUB Update_Shuffling_Message
+
     REM Reset Deck
     FOR I = 0 TO 51
         SD%(I) = -1
@@ -75,7 +70,14 @@ Shuffle_Discards__Continue:
     NEXT I
 
     SI% = DI% + 1 : REM Reset Shuffled Deck Index
-    DI% = -1 : REM Reset Discard Pile Index
+    DI% = -1 : REM Reset Discard Pile Index    
+
+    XP% = 35 : YP% = 2 : GOSUB Set_Cursor_Position
+    GOSUB Print_Card_Back
+
+    FOR I = 0 TO 100 : NEXT I : REM Wait
+
+    GOSUB Update_Player_Display
 
     RETURN
 
@@ -142,6 +144,15 @@ Highlight_Card_Bank_Position__Set_Bottom_Position:
 
     IF HM% THEN PRINT "{rvs on}{green}{106}   {107}{rvs off}"; : RETURN
     PRINT "{rvs on}{green}     {rvs off}";
+    RETURN
+
+Update_Shuffling_Message:
+    XP% = 0 : YP% = 12 : GOSUB Set_Cursor_Position
+    PRINT "{rvs on}{green}{171}{99}{99}{99}{99}{99}{99}{99}{99}{99}             {99}{99}{99}{99}{99}{99}{99}{99}{99}{rvs off}";
+
+    XP% = 12 : YP% = 12 : GOSUB Set_Cursor_Position
+    PRINT "{rvs on}{green}SHUFFLING{rvs off}";
+
     RETURN
 
 Update_Player_Display:
@@ -289,6 +300,12 @@ Draw_Card_From_Card_Stack:
 
     SI% = SI% - 1 : REM Set Next Card Index
     CI% = SD%(SI%) : REM Get Next Card
+
+    REM Check and Show Empty Card Stack
+    IF SI% > 0 THEN Draw_Card_From_Card_Stack_Continue
+    YP% = 2 : GOSUB Print_Blank_Card
+
+Draw_Card_From_Card_Stack_Continue:
 
     REM Display First Card
     XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
@@ -578,5 +595,20 @@ Print_Blank_Card:
         YP% = YP% + 1 : GOSUB Set_Cursor_Position         
         PRINT "{green}{166}{166}{166}"
     NEXT BC
+
+    RETURN
+
+Print_Card_Back:
+    REM Requires XP% and YP% to be set and cursor in position
+    PRINT "{rvs on}{blue}{176}{99}{174}{green}{rvs off}";
+
+    YP% = YP% + 1 : GOSUB Set_Cursor_Position
+    PRINT "{rvs on}{blue}{125}{166}{125}{green}{rvs off}";
+
+    YP% = YP% + 1 : GOSUB Set_Cursor_Position
+    PRINT "{rvs on}{blue}{125}{166}{125}{green}{rvs off}";
+
+    YP% = YP% + 1 : GOSUB Set_Cursor_Position
+    PRINT "{rvs on}{blue}{173}{99}{189}{green}{rvs off}";
 
     RETURN
