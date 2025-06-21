@@ -39,17 +39,15 @@ Shuffle_Deck__Continue:
     RETURN
 
 Shuffle_Discards:
-    YP% = 11 : GOSUB Print_Blank_Card
-
     GOSUB Update_Shuffling_Message
 
-    REM Reset Deck
+    REM Reset Shuffled Deck
     FOR I = 0 TO 51
         SD%(I) = -1
     NEXT I
 
-    FOR I = 0 TO DI%
-        RD% = (DI% + 1) - I
+    FOR I = 0 TO DI% - 1
+        RD% = DI% - I
         GOSUB Get_Random_Number
 
         SD%(I) = DP%(RD%) : REM Get card from discard pile
@@ -65,12 +63,15 @@ Shuffle_Discards__Continue:
     NEXT I
 
     REM Reset Discard Pile
-    FOR I = 0 TO 51
+    DP%(0) = DP%(DI%)
+
+    REM I = 1 because we can't include the top discarded card
+    FOR I = 1 TO 51
         DP%(I) = -1
     NEXT I
 
-    SI% = DI% + 1 : REM Reset Shuffled Deck Index
-    DI% = -1 : REM Reset Discard Pile Index    
+    SI% = DI% : REM Reset Shuffled Deck Index
+    DI% = 0 : REM Reset Discard Pile Index (0 because we have one card already)   
 
     XP% = 35 : YP% = 2 : GOSUB Set_Cursor_Position
     GOSUB Print_Card_Back
