@@ -76,9 +76,7 @@ Shuffle_Discards__Continue:
     XP% = 35 : YP% = 2 : GOSUB Set_Cursor_Position
     GOSUB Print_Card_Back
 
-    FOR I = 0 TO 100 : NEXT I : REM Wait
-
-    GOSUB Update_Player_Display
+    FOR I = 0 TO 300 : NEXT I : REM Wait
 
     RETURN
 
@@ -226,6 +224,8 @@ Ready_Up_Next_Player:
 
     FOR J = 1 TO 1000 : NEXT : REM Wait
 
+    IF SI% <= 0 THEN GOSUB Shuffle_Discards
+
     GOSUB Update_Player_Display
 
     REM Highlight Card Stack
@@ -296,8 +296,6 @@ Get_Discarded_Card:
 Draw_Card_From_Card_Stack:
     HP% = 10 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
     HP% = 11 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
-
-    IF SI% <= 0 THEN GOSUB Shuffle_Discards
 
     SI% = SI% - 1 : REM Set Next Card Index
     CI% = SD%(SI%) : REM Get Next Card
