@@ -242,8 +242,7 @@ Ready_Up_Next_Player:
 
     REM Set Discard Pile Available
     REM If the card is A - 10 or Jack, we may be able to claim it
-    IF RA% < 11 AND NOT CP% THEN DA% = -1
-    IF RA% < 10 AND CP% THEN DA% = -1
+    IF RA% < 11 THEN DA% = -1
 
     IF CP% THEN Do_Player_Turn
 
@@ -325,6 +324,9 @@ Process_Card:
     GOSUB Highlight_Discard_Pile
 
 Process_Player_Card:
+    WF% = 0 : REM Reset Wild Flag
+    TC% = -1 : REM Reset Temporary Wild Card
+
     GET K$
 
     IF HP% = 11 AND K$ = CHR$(13) THEN Discard_Current_Card
@@ -334,8 +336,12 @@ Process_Player_Card:
     IF HP% >= 0 AND HP% < 12 AND K$ = "D" THEN GOSUB Move_Marker_Right : GOTO Process_Player_Card
     IF HP% > 0 AND HP% < 12 AND K$ = "A" THEN GOSUB Move_Marker_Left : GOTO Process_Player_Card
 
-    IF RA% >= 10 THEN Process_Player_Card
-    IF HP% = RA% AND RA% < 10 AND NOT PU%(RA%) AND K$ = CHR$(13) THEN Place_Player_Card_In_Bank
+    IF RA% > 10 THEN Process_Player_Card
+
+    IF RA% = 10 AND NOT K$ = CHR$(13) THEN Process_Player_Card
+    IF RA% = 10 AND K$ = CHR$(13) THEN Player_Wild_Card_Check : REM Toggle Wild Card Check
+
+    IF HP% = RA% AND RA% < 10 AND PU%(RA%) <> -1 AND K$ = CHR$(13) THEN Place_Player_Card_In_Bank
 
     GOTO Process_Player_Card
 
@@ -370,19 +376,33 @@ Move_Marker_Right:
     HP% = HP% + 1 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
     RETURN
 
+Player_Wild_Card_Check:
+    REM Toggle Wild Card here
+    IF RA% = 10 THEN WF% = -1
+
+    IF HP% >= 0 AND HP% < 10 AND PU%(HP%) <> 0 THEN Process_Player_Card
+    RA% = HP% : REM Set card rank equal to current position
+    
 Place_Player_Card_In_Bank:
     YP% = 20 : GOSUB Print_Blank_Card
 
-    PU%(RA%) = -1
+    IF PU%(RA%) = 0 THEN PU%(RA%) = -1
+    IF WF% THEN PU%(RA%) = CI%
+    IF NOT WF% = -1 AND PU%(RA%) > -1 THEN TC% = PU%(RA%) : PU%(RA%) = -1
 
     GOSUB Place_Card_In_Bank
 
+    IF RA% = 10 THEN RA% = HP% : REM Reset card rank
+
     HP% = RA% : HM% = 0 : GOSUB Highlight_Card_Bank_Position
 
+    REM If card replaces a wild card, reduce the score
+    IF TC% > -1 THEN PS% = PS% - 1
     PS% = PS% + 1
     IF PS% >= 10 THEN Wait_Key
 
     CI% = PC%(RA%)
+    IF TC% > -1 THEN CI% = TC%
 
     XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
     GOSUB Print_Current_Card
@@ -435,7 +455,6 @@ Process_Computer_Card:
 
     REM Do Wild card game variation check here    
     IF RA% > 10 THEN Discard_Current_Card : REM 10 = Jack
-    IF RA% = 0 THEN Discard_Current_Card : REM Ace Block for Debug
     IF RA% = 10 THEN Process_Computer_Card__After_Bank_Check
 
     IF CU%(RA%) = -1 THEN Discard_Current_Card
@@ -453,9 +472,6 @@ Process_Computer_Card__Play_Wild_Card:
     REM Pick a random place to play the card
     RD% = 10 : GOSUB Get_Random_Number
     RA% = RD% : REM Set the rank to the randomized number
-
-    REM Random card cannot be an Ace during testing
-    IF RA% = 0 THEN Process_Computer_Card__Play_Wild_Card
 
     REM Check that the space is available and also not already a wild card
     IF CU%(RA%) = 0 THEN Process_Computer_Card__Play_Normal_Card
