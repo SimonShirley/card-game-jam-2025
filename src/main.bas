@@ -1,5 +1,7 @@
 GOTO Initialise_Program
 
+Wait_Key: GOTO Wait_Key
+
 Set_Cursor_Position:
     REM Set Cursor Position to X=XP%, Y=YP%
     REM Clear Flags
@@ -7,6 +9,28 @@ Set_Cursor_Position:
     POKE 781,YP% : POKE 782,XP% : POKE 783,0 : SYS 65520
     RETURN
 
+Get_Random_Number:
+    REM Returns RD% - Random Output
+    RD% = INT(RND(1) * RD%)
+    RETURN
+
+Get_Card_Value:
+    REM Requires CI% - Card Index Value
+    REM Returns RA% - Rank Value
+    RA% = CI% - (INT(CI% / 13) * 13)
+    RETURN
+
+Get_Cart_Suit:
+    REM Requires CI% - Card Index Value
+    REM Returns SU% - Suit Index
+
+    REM 0 - Spades, 0-12
+    REM 1 - Diamonds, 13-25
+    REM 2 - Clubs, 26-38
+    REM 3 - Hearts, 39-51
+
+    SU% = INT(CI% / 13)
+    RETURN
 
 Shuffle_Deck:
     REM Reset Deck
@@ -80,43 +104,6 @@ Shuffle_Discards__Continue:
 
     RETURN
 
-
-Get_Card_Value:
-    REM Requires CI% - Card Index Value
-    REM Returns RA% - Rank Value
-    RA% = CI% - (INT(CI% / 13) * 13)
-    RETURN
-
-Get_Cart_Suit:
-    REM Requires CI% - Card Index Value
-    REM Returns SU% - Suit Index
-
-    REM 0 - Spades, 0-12
-    REM 1 - Diamonds, 13-25
-    REM 2 - Clubs, 26-38
-    REM 3 - Hearts, 39-51
-
-    SU% = INT(CI% / 13)
-    RETURN
-
-Get_Random_Number:
-    REM Returns RD% - Random Output
-    RD% = INT(RND(1) * RD%)
-    RETURN
-
-Place_Card_In_Bank:
-    CO% = RA% - (INT(RA% / 5) * 5) : REM Get the Column Index 
-    RO% = INT(RA% / 5) : REM Get the Row Index
-
-    XP% = (CO% * 6) + 3 : REM Convert Column Index into Character position
-    YP% = (RO% * 6) + 1 : REM Convert Row Index into screen line
-
-    IF CP% THEN YP% = YP% + 13 : REM Move the screen line into player set
-
-    GOSUB Set_Cursor_Position    
-    GOSUB Print_Current_Card
-    RETURN
-
 Highlight_Card_Bank_Position:
     REM Requires Highlight Position - HP%
     REM Requires Highlight Mode - HM% -> HM% = 1 Print, 0 - Remove
@@ -143,6 +130,77 @@ Highlight_Card_Bank_Position__Set_Bottom_Position:
 
     IF HM% THEN PRINT "{rvs on}{green}{106}   {107}{rvs off}"; : RETURN
     PRINT "{rvs on}{green}     {rvs off}";
+    RETURN
+
+Place_Card_In_Bank:
+    CO% = RA% - (INT(RA% / 5) * 5) : REM Get the Column Index 
+    RO% = INT(RA% / 5) : REM Get the Row Index
+
+    XP% = (CO% * 6) + 3 : REM Convert Column Index into Character position
+    YP% = (RO% * 6) + 1 : REM Convert Row Index into screen line
+
+    IF CP% THEN YP% = YP% + 13 : REM Move the screen line into player set
+
+    GOSUB Set_Cursor_Position    
+    GOSUB Print_Current_Card
+    RETURN
+
+Print_Current_Card:
+    GOSUB Get_Card_Value
+    GOSUB Get_Cart_Suit
+
+    IF SU% = 0 OR SU% = 2 THEN PRINT "{rvs off}{black}   " : GOTO Print_Current_Card__Rank
+    PRINT "{rvs off}{red}   "
+
+Print_Current_Card__Rank:
+    YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
+    If RA% = 0  THEN PRINT " A " : GOTO Print_Current_Card__Suit
+    If RA% = 9  THEN PRINT "10 " : GOTO Print_Current_Card__Suit
+    If RA% = 10 THEN PRINT " J " : GOTO Print_Current_Card__Suit
+    If RA% = 11 THEN PRINT " Q " : GOTO Print_Current_Card__Suit
+    If RA% = 12 THEN PRINT " K " : GOTO Print_Current_Card__Suit
+
+    TS$ = STR$(RA% + 1) + " "
+    PRINT TS$
+
+Print_Current_Card__Suit:
+    YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
+    IF SU% = 0 THEN PRINT " {97} "  : GOTO Print_Current_Card__Final_Line
+    IF SU% = 1 THEN PRINT " {122} " : GOTO Print_Current_Card__Final_Line
+    IF SU% = 2 THEN PRINT " {120} " : GOTO Print_Current_Card__Final_Line
+    PRINT " {115} "
+
+Print_Current_Card__Final_Line:
+    YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
+    PRINT "   ";
+
+    RETURN
+
+Print_Blank_Card:
+    REM Requires YP% Set
+    XP% = 35 : YP% = YP% - 1
+    
+    FOR BC = 0 TO 3
+        REM Set Cursor Position
+        YP% = YP% + 1 : GOSUB Set_Cursor_Position         
+        PRINT "{green}{166}{166}{166}"
+    NEXT BC
+
+    RETURN
+
+Print_Card_Back:
+    REM Requires XP% and YP% to be set and cursor in position
+    PRINT "{rvs on}{blue}{176}{99}{174}{green}{rvs off}";
+
+    YP% = YP% + 1 : GOSUB Set_Cursor_Position
+    PRINT "{rvs on}{blue}{125}{166}{125}{green}{rvs off}";
+
+    YP% = YP% + 1 : GOSUB Set_Cursor_Position
+    PRINT "{rvs on}{blue}{125}{166}{125}{green}{rvs off}";
+
+    YP% = YP% + 1 : GOSUB Set_Cursor_Position
+    PRINT "{rvs on}{blue}{173}{99}{189}{green}{rvs off}";
+
     RETURN
 
 Update_Shuffling_Message:
@@ -444,6 +502,7 @@ Highlight_Discard_Pile:
     
     RETURN
 
+
 Process_Stack_Input:
     IF HP% = 10 THEN Draw_Card_From_Card_Stack
     IF HP% = 11 THEN Get_Card_From_Discard_Pile
@@ -526,8 +585,6 @@ Discard_Current_Card:
     GOTO Ready_Up_Next_Player
 
 
-Wait_Key: GOTO Wait_Key
-
 Game_Screen:
     POKE 53280,5 : REM Set border colour to green - $D020
 
@@ -606,63 +663,5 @@ Print_Blank_Screen:
     REM Re-enable the screen
     REM The graphics should appear almost instant
     POKE 53265,PEEK(53265) OR 16 : REM 1 in bit 4 $D011
-
-    RETURN
-
-Print_Current_Card:
-    GOSUB Get_Card_Value
-    GOSUB Get_Cart_Suit
-
-    IF SU% = 0 OR SU% = 2 THEN PRINT "{rvs off}{black}   " : GOTO Print_Current_Card__Rank
-    PRINT "{rvs off}{red}   "
-
-Print_Current_Card__Rank:
-    YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
-    If RA% = 0  THEN PRINT " A " : GOTO Print_Current_Card__Suit
-    If RA% = 9  THEN PRINT "10 " : GOTO Print_Current_Card__Suit
-    If RA% = 10 THEN PRINT " J " : GOTO Print_Current_Card__Suit
-    If RA% = 11 THEN PRINT " Q " : GOTO Print_Current_Card__Suit
-    If RA% = 12 THEN PRINT " K " : GOTO Print_Current_Card__Suit
-
-    TS$ = STR$(RA% + 1) + " "
-    PRINT TS$
-
-Print_Current_Card__Suit:
-    YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
-    IF SU% = 0 THEN PRINT " {97} "  : GOTO Print_Current_Card__Final_Line
-    IF SU% = 1 THEN PRINT " {122} " : GOTO Print_Current_Card__Final_Line
-    IF SU% = 2 THEN PRINT " {120} " : GOTO Print_Current_Card__Final_Line
-    PRINT " {115} "
-
-Print_Current_Card__Final_Line:
-    YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
-    PRINT "   ";
-
-    RETURN
-
-Print_Blank_Card:
-    REM Requires YP% Set
-    XP% = 35 : YP% = YP% - 1
-    
-    FOR BC = 0 TO 3
-        REM Set Cursor Position
-        YP% = YP% + 1 : GOSUB Set_Cursor_Position         
-        PRINT "{green}{166}{166}{166}"
-    NEXT BC
-
-    RETURN
-
-Print_Card_Back:
-    REM Requires XP% and YP% to be set and cursor in position
-    PRINT "{rvs on}{blue}{176}{99}{174}{green}{rvs off}";
-
-    YP% = YP% + 1 : GOSUB Set_Cursor_Position
-    PRINT "{rvs on}{blue}{125}{166}{125}{green}{rvs off}";
-
-    YP% = YP% + 1 : GOSUB Set_Cursor_Position
-    PRINT "{rvs on}{blue}{125}{166}{125}{green}{rvs off}";
-
-    YP% = YP% + 1 : GOSUB Set_Cursor_Position
-    PRINT "{rvs on}{blue}{173}{99}{189}{green}{rvs off}";
 
     RETURN
