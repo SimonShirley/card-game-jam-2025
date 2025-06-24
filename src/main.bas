@@ -477,7 +477,7 @@ Do_Player_Turn:
 
     REM If card has already been turned, draw from the stack
     REM Check Player Cards - CP% = -1 means player turn
-    IF CP% AND PU%(RA%) THEN DA% = 0
+    IF PU%(RA%) = -1 THEN DA% = 0
 
 Wait_Stack_Key:
     GET K$
