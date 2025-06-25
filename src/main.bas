@@ -248,6 +248,8 @@ Initialise_Program:
 
     RD% = RND(-TI)
 
+    GOTO Print_Title_Screen
+
 
 Restart:
     CP% = 0    : REM Current Player - -1 = Computer, 0 = Player
@@ -667,8 +669,45 @@ Print_Blank_Screen:
     RETURN
 
 
+Print_Title_Screen:
+    POKE 53280,5
+    POKE 53281,5
+
+    PRINT "{clr}{home}{white}   Unlike other game jam submissions"
+    PRINT
+    PRINT "              this one is"
+    PRINT "{red}"
+    PRINT "     {rvs on}{169} {127}{rvs off} {rvs on}  {127}{rvs off} {rvs on}{169} {127}{rvs off} {rvs on}{169} {127}{rvs off} {rvs on} {rvs off}   {rvs on} {rvs off} {rvs on} {rvs off} {rvs on}   {rvs off} {rvs on}{169}  {rvs off}"
+    PRINT "     {rvs on} {rvs off} {rvs on} {rvs off} {rvs on} {rvs off} {169} {rvs on} {rvs off}   {rvs on} {rvs off} {rvs on} {rvs off} {rvs on} {rvs off}   {rvs on} {rvs off} {rvs on} {rvs off}  {rvs on} {rvs off}  {rvs on} {rvs off}"
+    PRINT "     {rvs on}   {rvs off} {rvs on}  {127}{rvs off} {127}{rvs on} {127}{rvs off} {rvs on} {rvs off} {rvs on} {rvs off} {rvs on} {rvs off}   {rvs on} {rvs off} {rvs on} {rvs off}  {rvs on} {rvs off}  {rvs on}   {rvs off}"
+    PRINT "     {rvs on} {rvs off} {rvs on} {rvs off} {rvs on} {rvs off} {rvs on} {rvs off}   {rvs on} {rvs off} {rvs on} {rvs off} {rvs on} {rvs off} {rvs on} {rvs off}   {rvs on} {rvs off} {rvs on} {rvs off}  {rvs on} {rvs off}  {rvs on} {rvs off}"
+    PRINT "     {rvs on} {rvs off} {rvs on} {rvs off} {rvs on}  {rvs off}{169} {127}{rvs on} {rvs off}{169} {127}{rvs on} {rvs off}{169} {rvs on}   {rvs off} {127}{rvs on} {rvs off}{169}  {rvs on} {rvs off}  {127}{rvs on}  {rvs off}"
+    PRINT
+    PRINT "{blue}"
+    PRINT "     {rvs on}     {rvs off} {rvs on}    {127}{rvs off}  {rvs on}{169} {127}{rvs off}  {rvs on}{169}   {127}{rvs off} {rvs on} {rvs off}   {rvs on} {rvs off}"
+    PRINT "       {rvs on} {rvs off}   {rvs on} {rvs off}   {rvs on} {rvs off} {rvs on}{169}{rvs off}{169} {127}{rvs on}{127}{rvs off} {rvs on} {rvs off}   {rvs on} {rvs off} {rvs on} {rvs off}   {rvs on} {rvs off}"
+    PRINT "       {rvs on} {rvs off}   {rvs on} {rvs off}   {rvs on} {rvs off} {rvs on} {rvs off}   {rvs on} {rvs off} {rvs on} {rvs off}     {rvs on} {rvs off}   {rvs on} {rvs off}"
+    PRINT "       {rvs on} {rvs off}   {rvs on}    {rvs off}{169} {rvs on}     {rvs off} {127}{rvs on}   {127}{rvs off} {rvs on}     {rvs off}"
+    PRINT "       {rvs on} {rvs off}   {rvs on} {rvs off} {127}{rvs on}{127}{rvs off}  {rvs on} {rvs off}   {rvs on} {rvs off}     {rvs on} {rvs off} {rvs on} {rvs off}   {rvs on} {rvs off}"
+    PRINT "       {rvs on} {rvs off}   {rvs on} {rvs off}  {127}{rvs on}{127}{rvs off} {rvs on} {rvs off}   {rvs on} {rvs off} {rvs on} {rvs off}   {rvs on} {rvs off} {rvs on} {rvs off}   {rvs on} {rvs off}"
+    PRINT "       {rvs on} {rvs off}   {rvs on} {rvs off}   {rvs on} {rvs off} {rvs on} {rvs off}   {rvs on} {rvs off} {127}{rvs on}   {rvs off}{169} {rvs on} {rvs off}   {rvs on} {rvs off}"
+    PRINT
+    PRINT
+    PRINT "{white}  Participated in the {blue}Retro Programmers"
+    PRINT "   Inside {white}(RPI) and {yellow}Phaze101 {white}game jam"
+    PRINT
+    PRINT "     - Press any key to continue -"
+
+Wait_Title_Screen:
+    GET K$ : IF K$ = "" THEN Wait_Title_Screen
+
+    GOTO Restart
+
+
+
 Print_Instructions:
-    PRINT "{home}{rvs on}"
+    POKE 53281,5
+    PRINT "{clr}{home}"
     PRINT " Absolute Trash - How to Play"
     PRINT
     PRINT " This game is an American Children's"
@@ -787,9 +826,9 @@ Wait_Instruction_Key_3:
 Wait_Instruction_Key_4:
     GET K$ : IF K$ = "" THEN Wait_Instruction_Key_4
 
-    GOSUB Print_Blank_Screen
+    POKE 53281,5
 
-    PRINT "{home}"
+    PRINT "{clr}{home}"
     PRINT " Absolute Trash - How to Play"
     PRINT
     PRINT " If discards are enabled and the"
@@ -818,9 +857,7 @@ Wait_Instruction_Key_4:
 Wait_Instruction_Key_5:
     GET K$ : IF K$ = "" THEN Wait_Instruction_Key_5
 
-    GOSUB Print_Blank_Screen
-
-    PRINT "{home}"
+    PRINT "{clr}{home}"
     PRINT " Absolute Trash - How to Play"
     PRINT
     PRINT " In the unlikely event that all of the"
