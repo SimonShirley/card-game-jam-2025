@@ -665,3 +665,184 @@ Print_Blank_Screen:
     POKE 53265,PEEK(53265) OR 16 : REM 1 in bit 4 $D011
 
     RETURN
+
+
+Print_Instructions:
+    PRINT "{home}{rvs on}"
+    PRINT " Absolute Trash - How to Play"
+    PRINT
+    PRINT " This game is an American Children's"
+    PRINT " card game, known as Garbage, Ten"
+    PRINT " or more commonly as Trash."
+    PRINT " The aim of the game is to complete"
+    PRINT " your bank of 10 cards, A - 10, before"
+    PRINT " your opponent. The game is essentially"
+    PRINT " the luck of the draw."
+    PRINT
+    PRINT " Aces count as 1, cards 2 - 10 have"
+    PRINT " their face value, and Jacks are wild."
+    PRINT
+    PRINT " In this game, the suit of the card"
+    PRINT " doesn't matter. Only the rank of the"
+    PRINT " card counts."
+    PRINT
+    PRINT " The cursor is moved around the screen"
+    PRINT " using the W, A, S and D keys."
+    PRINT " Press RETURN to make your selection."
+    PRINT "                             - MORE -"
+
+Wait_Instruction_Key_1:
+    GET K$ : IF K$ = "" THEN Wait_Instruction_Key_1
+
+    GOSUB Print_Blank_Screen
+
+    PRINT "{home}"
+    PRINT " Absolute Trash - How to Play"
+    PRINT
+    PRINT " Cards are shuffled and each player is"
+    PRINT " dealt 10 cards, placed face down in"
+    PRINT " front of them in 2 rows of 5 cards."
+    PRINT
+    PRINT " {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green}"
+    PRINT " {blue}{125}A{125}{green} {blue}{125}2{125}{green} {blue}{125}3{125}{green} {blue}{125}4{125}{green} {blue}{125}5{125}{green}"
+    PRINT " {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green}"
+    PRINT " {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green}"
+    PRINT
+    PRINT
+    PRINT " {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green}"
+    PRINT " {blue}{125}6{125}{green} {blue}{125}7{125}{green} {blue}{125}8{125}{green} {blue}{125}9{125}{green} {blue}{125}1{125}{green}"
+    PRINT " {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}0{125}{green}"
+    PRINT " {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green}"
+    PRINT
+    PRINT " Players are not allowed to look at"
+    PRINT " their card bank."
+    PRINT
+    PRINT " The rest of the deck is set to one"
+    PRINT " side to be used as a draw stack."
+    PRINT
+    PRINT "                             - MORE -"
+
+Wait_Instruction_Key_2:
+    GET K$ : IF K$ = "" THEN Wait_Instruction_Key_2
+
+    GOSUB Print_Blank_Screen
+
+    PRINT "{home}"
+    PRINT " Absolute Trash - How to Play   {180} STACK"
+    PRINT "                                {180}"
+    PRINT " The turn begins by drawing     {180}  {blue}{176}{99}{174}{green}"
+    PRINT " from the stack. The card in    {180}  {blue}{125}{166}{125}{green}"
+    PRINT " play is shown under {34}current{34}  {180}  {blue}{125}{166}{125}{green}"
+    PRINT "                                {180}  {blue}{173}{99}{189}{green}"
+    PRINT " If the card is a pip card,     {180}"
+    PRINT " A-10, the player places that   {180}"
+    PRINT " card in the correct location   {180}DISCARD";
+    PRINT " in the bank, unless the bank   {180}"
+    PRINT " slot has already been filled.  {180}  {rvs off}    {rvs on}"
+    PRINT "                                {180}  {rvs off} {black}A{green} {rvs on}"
+    PRINT " If the card in that location   {180}  {rvs off} {black}{120}{green} {rvs on}"
+    PRINT " is currently face down, the    {180}  {rvs off}    {rvs on}"
+    PRINT " face down card is turned over  {180}"
+    PRINT " and becomes the next card in   {180}"
+    PRINT " play.                          {180} CURRENT";
+    PRINT "                                {180}"
+    PRINT " If the card in play has        {180}  {166}{166}{166}"
+    PRINT " already been banked, the       {180}  {166}{166}{166}"
+    PRINT " player must discard the card,  {180}  {166}{166}{166}"
+    PRINT " placing it on the discard pile {180}  {166}{166}{166}"
+    PRINT
+    PRINT "                             - MORE -"
+
+Wait_Instruction_Key_3:
+    GET K$ : IF K$ = "" THEN Wait_Instruction_Key_3
+
+    GOSUB Print_Blank_Screen
+
+    PRINT "{home}"
+    PRINT " Absolute Trash - How to Play   {180} STACK"
+    PRINT "                                {180}"
+    PRINT " {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green}            {180}  {blue}{176}{99}{174}{green}"
+    PRINT " {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green}            {180}  {blue}{125}{166}{125}{green}"
+    PRINT " {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green}            {180}  {blue}{125}{166}{125}{green}"
+    PRINT " {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green}            {180}  {blue}{173}{99}{189}{green}"
+    PRINT "                                {180}"
+    PRINT " {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green} {blue}{176}{99}{174}{green}            {180}"
+    PRINT " {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green}            {180} DISCARD";
+    PRINT " {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green} {blue}{125}{166}{125}{green}            {180}"
+    PRINT " {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green} {blue}{173}{99}{189}{green}            {180}  {rvs off}   {rvs on}"
+    PRINT "                                {180}  {rvs off} {red}6 {rvs on}{green}"
+    PRINT " The player continues turning   {180}  {rvs off} {red}{115} {rvs on}{green}"
+    PRINT " and banking cards until the.   {180}  {rvs off}   {rvs on}{green}"
+    PRINT " card to bank has already been  {180}"
+    PRINT " turned face up.                {180}"
+    PRINT "                                {180} CURRENT";
+    PRINT " The player discards this card  {180}"
+    PRINT " and play continues with their  {180}  {rvs off}   {rvs on}"
+    PRINT " opponent.                      {180}  {rvs off} {black}7 {rvs on}{green}"
+    PRINT "                                {180}  {rvs off} {black}{97} {rvs on}{green}"
+    PRINT "                                {180}  {rvs off}   {rvs on}"
+    PRINT
+    PRINT "                             - MORE -"
+
+Wait_Instruction_Key_4:
+    GET K$ : IF K$ = "" THEN Wait_Instruction_Key_4
+
+    GOSUB Print_Blank_Screen
+
+    PRINT "{home}"
+    PRINT " Absolute Trash - How to Play"
+    PRINT
+    PRINT " If discards are enabled and the"
+    PRINT " previous player has discarded a card"
+    PRINT " that the player requires, the player"
+    PRINT " may pick up and play the discarded"
+    PRINT " card instead of staring their turn"
+    PRINT " from the stack."
+    PRINT
+    PRINT
+    PRINT " If Jacks as Wild Cards is enabled, any"
+    PRINT " time that the player draws a Jack, the"
+    PRINT " Jack may be played as if it were a pip"
+    PRINT " card, A-10, so long as the banked slot"
+    PRINT " has not yet been turned face up."
+    PRINT
+    PRINT " If the player is able to play a pip"
+    PRINT " card where a wild card Jack has"
+    PRINT " previously been played, the pip card"
+    PRINT " will replace the wild card and the"
+    PRINT " wild card is then able to be re-used"
+    PRINT " in a new, face down location."
+    PRINT
+    PRINT "                             - MORE -"
+
+Wait_Instruction_Key_5:
+    GET K$ : IF K$ = "" THEN Wait_Instruction_Key_5
+
+    GOSUB Print_Blank_Screen
+
+    PRINT "{home}"
+    PRINT " Absolute Trash - How to Play"
+    PRINT
+    PRINT " In the unlikely event that all of the"
+    PRINT " stack has been played, the discard"
+    PRINT " pile, (with the exception of the top"
+    PRINT " card), will be re-shuffled and turned"
+    PRINT " face down to form a new stack pile."
+    PRINT
+    PRINT
+    PRINT " The first player to turn over all of"
+    PRINT " their bank cards is the winner."
+    PRINT
+    PRINT " If more than one round is to be"
+    PRINT " played, the winner from the previous"
+    PRINT " round will have 1 fewer card to bank,"
+    PRINT " starting from 10, (leaving A - 9"
+    PRINT " remaining, and so on)."
+    PRINT
+    PRINT " The player who won the previous round"
+    PRINT " will start the next round."
+    PRINT
+    PRINT
+    PRINT "                              - END -"
+
+    GOTO Wait_Key
