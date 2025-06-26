@@ -304,6 +304,9 @@ Ready_Up_Next_Player:
     REM If the card is A - 10 or Jack, we may be able to claim it
     IF RA% < 11 THEN DA% = -1
 
+    REM If Discarded cards are not enabled in the options
+    IF NOT MD% THEN DA% = 0
+
     IF CP% THEN Do_Player_Turn
 
 Do_Computer_Turn:
@@ -700,6 +703,12 @@ Print_Title_Screen:
 
 Wait_Title_Screen:
     GET K$ : IF K$ = "" THEN Wait_Title_Screen
+
+Print_Options_Screen:
+
+    MD% = 0     : REM Options Discard Flag
+
+    GOTO Restart
 
     
 
