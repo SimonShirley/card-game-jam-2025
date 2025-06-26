@@ -297,6 +297,10 @@ Ready_Up_Next_Player:
     IF DI% = -1 AND NOT CP% THEN Draw_Card_From_Card_Stack
     IF DI% = -1 AND CP% THEN Wait_Stack_Key
 
+    REM If Discard Pickup Menu option disabled, skip discard pile check
+    IF NOT MD% AND NOT CP% THEN Do_Computer_Turn
+    IF NOT MD% AND CP% THEN Wait_Stack_Key
+
     REM Check rank of discarded card
     CI% = DP%(DI%) : GOSUB Get_Card_Value
 
@@ -304,18 +308,19 @@ Ready_Up_Next_Player:
     REM If the card is A - 10 or Jack, we may be able to claim it
     IF RA% < 11 THEN DA% = -1
 
-    REM If Discarded cards are not enabled in the options
-    IF NOT MD% THEN DA% = 0
+    REM If Wild Card Menu option disabled, disable pickup from discard pile
+    IF NOT MW% AND RA% = 10 THEN DA% = 0
 
     IF CP% THEN Do_Player_Turn
 
 Do_Computer_Turn:
-    IF NOT DA% AND NOT CP% THEN Draw_Card_From_Card_Stack
+    IF NOT DA% THEN Draw_Card_From_Card_Stack
 
-    IF NOT CP% AND RA% = 10 THEN Do_Computer_Turn__Skip_Bank_Check
+    IF RA% = 10 AND NOT MW% THEN Draw_Card_From_Card_Stack
+    IF RA% = 10 THEN Do_Computer_Turn__Skip_Bank_Check
 
     REM Check Computer Cards - CP% = 0 means computer turn
-    IF NOT CP% AND CU%(RA%) = -1 THEN Draw_Card_From_Card_Stack
+    IF CU%(RA%) = -1 THEN Draw_Card_From_Card_Stack
 
 Do_Computer_Turn__Skip_Bank_Check:
     REM Otherwise, use the discarded card (continue)
@@ -440,7 +445,9 @@ Move_Marker_Right:
     RETURN
 
 Player_Wild_Card_Check:
-    REM Toggle Wild Card here
+    REM If Wild Cards Disabled, skip
+    IF RA% = 10 AND NOT MW% THEN Process_Player_Card
+
     IF RA% = 10 THEN WF% = -1
 
     IF HP% >= 0 AND HP% < 10 AND PU%(HP%) <> 0 THEN Process_Player_Card
@@ -512,6 +519,8 @@ Process_Stack_Input:
     IF HP% = 10 THEN Draw_Card_From_Card_Stack
     IF HP% = 11 THEN Get_Card_From_Discard_Pile
 
+    GOTO Process_Player_Card
+
 
 Process_Computer_Card:
     WF% = 0 : REM Reset Wild Flag
@@ -519,6 +528,7 @@ Process_Computer_Card:
 
     REM Do Wild card game variation check here    
     IF RA% > 10 THEN Discard_Current_Card : REM 10 = Jack
+    IF RA% = 10 AND NOT MW% THEN Discard_Current_Card : REM 10 = Jack, Wild Card Disabled
     IF RA% = 10 THEN Process_Computer_Card__After_Bank_Check
 
     IF CU%(RA%) = -1 THEN Discard_Current_Card
@@ -706,7 +716,8 @@ Wait_Title_Screen:
 
 Print_Options_Screen:
 
-    MD% = 0     : REM Options Discard Flag
+    MD% = -1     : REM Options Discard Flag
+    MW% = -1     : REM Options Wild Card Flag
 
     GOTO Restart
 
