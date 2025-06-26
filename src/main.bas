@@ -1,7 +1,5 @@
 GOTO Initialise_Program
 
-Wait_Key: GOTO Wait_Key
-
 Set_Cursor_Position:
     REM Set Cursor Position to X=XP%, Y=YP%
     REM Clear Flags
@@ -224,6 +222,18 @@ Update_Player_Display__Player:
 Update_Player_Display__Computer:
     PRINT "{rvs on}{green}{171}{99}{99}{99}{99}{rvs off}{169}{127}{169}{127}{rvs on} COMPUTER TURN {rvs off}{169}{127}{169}{127}{rvs on}{99}{99}{99}{99}{rvs off}";
     RETURN
+
+Update_Player_Display_Player_Win:
+    XP% = 0 : YP% = 12 : GOSUB Set_Cursor_Position : REM Set Cursor
+    PRINT "{rvs on}{green}{171}{99}{99}{99}{99}{99}{99}{99}{99}  PLAYER  WINS {99}{99}{99}{99}{99}{99}{99}{99}{rvs off}";
+    FOR I = 0 TO 2000 : NEXT I
+    GOTO Print_Title_Screen
+
+Update_Player_Display_Computer_Win:
+    XP% = 0 : YP% = 12 : GOSUB Set_Cursor_Position : REM Set Cursor
+    PRINT "{rvs on}{green}{171}{99}{99}{99}{99}{99}{99}{99}{99} COMPUTER WINS {99}{99}{99}{99}{99}{99}{99}{99}{rvs off}";
+    FOR I = 0 TO 2000 : NEXT I
+    GOTO Print_Title_Screen
 
 
 Initialise_Program:
@@ -469,7 +479,7 @@ Place_Player_Card_In_Bank:
     REM If card replaces a wild card, reduce the score
     IF TC% > -1 THEN PS% = PS% - 1
     PS% = PS% + 1
-    IF PS% >= 10 THEN Wait_Key
+    IF PS% >= 10 THEN Update_Player_Display_Player_Win
 
     CI% = PC%(RA%)
     IF TC% > -1 THEN CI% = TC%
@@ -571,7 +581,7 @@ Process_Computer_Card__Play_Normal_Card:
     REM If card replaces a wild card, reduce the score
     IF TC% > -1 THEN CS% = CS% - 1
     CS% = CS% + 1
-    IF CS% >= 10 THEN Wait_Key
+    IF CS% >= 10 THEN Update_Player_Display_Computer_Win
 
     CI% = CC%(RA%)
     IF TC% > -1 THEN CI% = TC%
