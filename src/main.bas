@@ -851,7 +851,7 @@ Print_Options_Screen__Print_Wild:
     RETURN
 
 Set_Options_Screen__Increase_Round_Count:
-    IF MR% < 9 THEN MR% = MR% + 1
+    IF MR% < 10 THEN MR% = MR% + 1
     GOTO Print_Options_Screen__Print_Round_Count
 
 Set_Options_Screen__Decrease_Round_Count:
