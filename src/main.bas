@@ -31,6 +31,10 @@ Get_Cart_Suit:
     RETURN
 
 Shuffle_Deck:
+    REM Set Deck Shuffled Flag
+    REM This is used to test for a stalemate situation
+    SP% = -1
+
     REM Reset Deck
     FOR I = 0 TO 51
         DP%(I) = I
@@ -62,6 +66,10 @@ Shuffle_Deck__Continue:
 
 Shuffle_Discards:
     GOSUB Update_Shuffling_Message
+
+    REM Set Deck Shuffled Flag
+    REM This is used to test for a stalemate situation
+    SP% = -1
 
     REM Reset Shuffled Deck
     FOR I = 0 TO 51
@@ -131,6 +139,10 @@ Highlight_Card_Bank_Position__Set_Bottom_Position:
     RETURN
 
 Place_Card_In_Bank:
+    REM Reset Deck Shuffled Flag
+    REM This is used to test for a stalemate situation
+    SP% = 0
+
     CO% = RA% - (INT(RA% / 5) * 5) : REM Get the Column Index 
     RO% = INT(RA% / 5) : REM Get the Row Index
 
@@ -258,6 +270,12 @@ Update_Player_Display_Computer_Win:
     IF CW% = MR% THEN Print_Title_Screen
     GOTO Restart
 
+Update_Player_Display_Stalemate:
+    XP% = 0 : YP% = 12 : GOSUB Set_Cursor_Position : REM Set Cursor
+    PRINT "{rvs on}{green}{171}{99}{99}{99}{99}{99}{99}   STALEMATE DETECTED  {99}{99}{99}{99}{99}{99}{99}{99}{rvs off}";
+    FOR I = 0 TO 2000 : NEXT I
+    GOTO Restart
+
 
 Initialise_Program:
     VL = 1024  : REM $0400 - First Screen Location
@@ -309,6 +327,8 @@ Restart:
     REM Wait
     FOR I = 0 TO 500 : NEXT I
 
+    TD% = CP%   : REM Temp Previous Deal Holder
+
     REM Deal Cards
     FOR I = 0 TO 9
         IF I > (9 - PW%) THEN Deal_Cards_Omit_Player_Card
@@ -345,12 +365,15 @@ Deal_Cards_Omit_Computer_Card:
 Deal_Cards_Continue:        
     NEXT I
 
+    CP% = TD%   : REM Reset Previous Player
+
 Ready_Up_Next_Player:
     CP% = NOT CP% : REM Set Next Player
     DA% = 0 : REM Discard Available Flag
 
     FOR J = 1 TO 1000 : NEXT : REM Wait
 
+    IF SP% = -1 AND SI% <= 0 THEN Update_Player_Display_Stalemate
     IF SI% <= 0 THEN GOSUB Shuffle_Discards
 
     GOSUB Update_Player_Display
