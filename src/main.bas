@@ -143,6 +143,19 @@ Place_Card_In_Bank:
     GOSUB Print_Current_Card
     RETURN
 
+Place_Card_Dealt_In_Bank:
+    CO% = RA% - (INT(RA% / 5) * 5) : REM Get the Column Index 
+    RO% = INT(RA% / 5) : REM Get the Row Index
+
+    XP% = (CO% * 6) + 3 : REM Convert Column Index into Character position
+    YP% = (RO% * 6) + 1 : REM Convert Row Index into screen line
+
+    IF CP% THEN YP% = YP% + 13 : REM Move the screen line into player set
+
+    GOSUB Set_Cursor_Position    
+    GOSUB Print_Card_Back
+    RETURN
+
 Print_Current_Card:
     GOSUB Get_Card_Value
     GOSUB Get_Cart_Suit
@@ -280,15 +293,27 @@ Restart:
 
     GOSUB Game_Screen
 
+    REM Wait
+    FOR I = 0 TO 500 : NEXT I
+
     REM Deal Cards
     FOR I = 0 TO 9
         SI% = SI% - 1       : REM Set Next Card Index
         PC%(I) = SD%(SI%)   : REM Allocate to Player
         PU%(I) = 0
 
+        RA% = I
+        CP% = -1 : GOSUB Place_Card_Dealt_In_Bank
+
+        FOR J = 0 TO 150 : NEXT J
+
         SI% = SI% - 1       : REM Set Next Card Index
         CC%(I) = SD%(SI%)   : REM Allocate to Computer
         CU%(I) = 0
+
+        CP% = 0 : GOSUB Place_Card_Dealt_In_Bank
+
+        FOR J = 0 TO 150 : NEXT J
     NEXT I
 
 Ready_Up_Next_Player:
@@ -625,29 +650,29 @@ Game_Screen:
     REM The whole screen is painted using reversed characters!
     PRINT "{clr}{home}{rvs on}{green}";
     PRINT "                                {180} STACK ";
-    PRINT "   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}  {180}       ";
-    PRINT "C  {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}  {180}  {blue}{176}{99}{174}{green}  ";
-    PRINT "O  {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}  {180}  {blue}{125}{166}{125}{green}  ";
-    PRINT "M  {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}  {180}  {blue}{125}{166}{125}{green}  ";
+    PRINT "   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}       ";
+    PRINT "C  {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}  {blue}{176}{99}{174}{green}  ";
+    PRINT "O  {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}  {blue}{125}{166}{125}{green}  ";
+    PRINT "M  {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}  {blue}{125}{166}{125}{green}  ";
     PRINT "P                               {180}  {blue}{173}{99}{189}{green}  ";
     PRINT "U                               {180}       ";
-    PRINT "T  {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}  {180}       ";
-    PRINT "E  {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}  {180}       ";
-    PRINT "R  {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}  {180}DISCARD";
-    PRINT "   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}  {180}       ";
+    PRINT "T  {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}       ";
+    PRINT "E  {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}       ";
+    PRINT "R  {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}DISCARD";
+    PRINT "   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}       ";
     PRINT "                                {180}  {166}{166}{166}  ";
     PRINT "{171}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{180}  {166}{166}{166}  ";
     PRINT "                                {180}  {166}{166}{166}  ";
-    PRINT "   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}  {180}  {166}{166}{166}  ";
-    PRINT "   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}  {180}       ";
-    PRINT "P  {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}  {180}       ";
-    PRINT "L  {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}  {180}       ";
+    PRINT "   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}  {166}{166}{166}  ";
+    PRINT "   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}       ";
+    PRINT "P  {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}       ";
+    PRINT "L  {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}       ";
     PRINT "A                               {180}CURRENT";
     PRINT "Y                               {180}       ";
-    PRINT "E  {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}   {blue}{176}{99}{174}{green}  {180}  {166}{166}{166}  ";
-    PRINT "R  {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}  {180}  {166}{166}{166}  ";
-    PRINT "   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}   {blue}{125}{166}{125}{green}  {180}  {166}{166}{166}  ";
-    PRINT "   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}   {blue}{173}{99}{189}{green}  {180}  {166}{166}{166}  ";
+    PRINT "E  {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}  {166}{166}{166}  ";
+    PRINT "R  {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}  {166}{166}{166}  ";
+    PRINT "   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}  {166}{166}{166}  ";
+    PRINT "   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}   {166}{166}{166}  {180}  {166}{166}{166}  ";
     PRINT "                                {180}      {rvs off}";
 
     REM The PRINT / CHROUT routine will automatically scroll the screen
