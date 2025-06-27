@@ -860,6 +860,9 @@ Set_Options_Screen__Decrease_Round_Count:
 
 Print_Options_Screen__Print_Round_Count:
     XP% = 0 : YP% = 16 : GOSUB Set_Cursor_Position
+    PRINT "  {white}Rounds to Win  (F5/F7) :    "
+
+    XP% = 0 : YP% = 16 : GOSUB Set_Cursor_Position
     PRINT "  {white}Rounds to Win  (F5/F7) :";MR%
     RETURN
 
