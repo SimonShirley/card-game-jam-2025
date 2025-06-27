@@ -240,13 +240,23 @@ Update_Player_Display_Player_Win:
     XP% = 0 : YP% = 12 : GOSUB Set_Cursor_Position : REM Set Cursor
     PRINT "{rvs on}{green}{171}{99}{99}{99}{99}{99}{99}{99}{99}  PLAYER  WINS {99}{99}{99}{99}{99}{99}{99}{99}{rvs off}";
     FOR I = 0 TO 2000 : NEXT I
-    GOTO Print_Title_Screen
+
+    PW% = PW% + 1
+    CP% = 0 : REM Set Computer turn, so that ready up flips to computer
+    
+    IF PW% = MR% THEN Print_Title_Screen
+    GOTO Restart
 
 Update_Player_Display_Computer_Win:
     XP% = 0 : YP% = 12 : GOSUB Set_Cursor_Position : REM Set Cursor
     PRINT "{rvs on}{green}{171}{99}{99}{99}{99}{99}{99}{99}{99} COMPUTER WINS {99}{99}{99}{99}{99}{99}{99}{99}{rvs off}";
     FOR I = 0 TO 2000 : NEXT I
-    GOTO Print_Title_Screen
+
+    CW% = CW% + 1
+    CP% = -1 : REM Set Computer turn, so that ready up flips to computer
+    
+    IF CW% = MR% THEN Print_Title_Screen
+    GOTO Restart
 
 
 Initialise_Program:
@@ -266,31 +276,34 @@ Initialise_Program:
 
     DIM DP%(51) : REM Discard Pile
 
-    SI% = 52    : REM Shuffled Deck Current Index
-    DI% = -1    : REM Discard Pile Current Index
-
-    MD% = -1     : REM Options Discard Flag
-    MW% = -1     : REM Options Wild Card Flag
+    MD% = -1    : REM Options Discard Flag
+    MW% = -1    : REM Options Wild Card Flag
+    MR% = 1     : REM Rounds to declare a win
 
     RD% = RND(-TI)
 
     GOTO Print_Title_Screen
 
+Pre_Restart:
+    PW% = 0     : REM Player Complete Win Score
+    CW% = 0     : REM Computer Complete Win Score
+
+    CP% = 0     : REM Current Player - -1 = Computer, 0 = Player
 
 Restart:
-    CP% = 0    : REM Current Player - -1 = Computer, 0 = Player
+    PS% = 0 + PW%   : REM Player Uncovered Count
+    CS% = 0 + CW%   : REM Computer Uncovered Count
 
-    PS% = 0    : REM Player Uncovered Count
-    CS% = 0    : REM Computer Uncovered Count
+    SI% = 52    : REM Shuffled Deck Current Index
+    DI% = -1    : REM Discard Pile Current Index
 
     GOSUB Print_Blank_Screen
     PRINT "{home}{rvs on}Shuffling deck...{rvs off}"
     PRINT
 
-    GOSUB Shuffle_Deck
-
     RD% = RND(-TI) : REM Re-seed the randomiser
-
+    
+    GOSUB Shuffle_Deck
     GOSUB Game_Screen
 
     REM Wait
@@ -298,6 +311,7 @@ Restart:
 
     REM Deal Cards
     FOR I = 0 TO 9
+        IF I > (9 - PW%) THEN Deal_Cards_Omit_Player_Card
         SI% = SI% - 1       : REM Set Next Card Index
         PC%(I) = SD%(SI%)   : REM Allocate to Player
         PU%(I) = 0
@@ -307,13 +321,28 @@ Restart:
 
         FOR J = 0 TO 150 : NEXT J
 
+        GOTO Deal_Cards_Computer
+
+Deal_Cards_Omit_Player_Card:
+        PU%(I) = -1
+
+Deal_Cards_Computer:
+        IF I > (9 - CW%) THEN Deal_Cards_Omit_Computer_Card
         SI% = SI% - 1       : REM Set Next Card Index
         CC%(I) = SD%(SI%)   : REM Allocate to Computer
         CU%(I) = 0
 
+        RA% = I
         CP% = 0 : GOSUB Place_Card_Dealt_In_Bank
 
         FOR J = 0 TO 150 : NEXT J
+
+        GOTO Deal_Cards_Continue
+
+Deal_Cards_Omit_Computer_Card:
+        CU%(I) = -1
+
+Deal_Cards_Continue:        
     NEXT I
 
 Ready_Up_Next_Player:
@@ -769,7 +798,7 @@ Print_Options_Screen:
     PRINT
     GOSUB Print_Options_Screen__Print_Wild
     PRINT
-    PRINT : REM Rounds to Win
+    GOSUB Print_Options_Screen__Print_Round_Count
     PRINT
     PRINT
     PRINT
@@ -799,16 +828,16 @@ Print_Options_Screen__Print_Wild:
     RETURN
 
 Set_Options_Screen__Increase_Round_Count:
-    IF RC% < 9 THEN RC% = RC% + 1
+    IF MR% < 9 THEN MR% = MR% + 1
     GOTO Print_Options_Screen__Print_Round_Count
 
 Set_Options_Screen__Decrease_Round_Count:
-    IF RC% > 1 THEN RC% = RC% - 1
+    IF MR% > 1 THEN MR% = MR% - 1
     GOTO Print_Options_Screen__Print_Round_Count
 
 Print_Options_Screen__Print_Round_Count:
     XP% = 0 : YP% = 16 : GOSUB Set_Cursor_Position
-    PRINT "  {white}Rounds to Win (F5/F7) :";RC%
+    PRINT "  {white}Rounds to Win  (F5/F7) :";MR%
     RETURN
 
 Wait_Options_Screen:
@@ -816,12 +845,12 @@ Wait_Options_Screen:
 
     IF K$ = CHR$(133) THEN GOSUB Set_Options_Screen__Discard
     IF K$ = CHR$(134) THEN GOSUB Set_Options_Screen__Wild
-    REM K$ = CHR$(135) THEN GOSUB Set_Options_Screen__Increase_Round_Count
-    REM K$ = CHR$(136) THEN GOSUB Set_Options_Screen__Decrease_Round_Count
+    IF K$ = CHR$(135) THEN GOSUB Set_Options_Screen__Increase_Round_Count
+    IF K$ = CHR$(136) THEN GOSUB Set_Options_Screen__Decrease_Round_Count
 
     IF K$ = "I" THEN Print_Instructions
     IF K$ = "C" THEN Print_Credits
-    IF K$ = CHR$(13) THEN Restart
+    IF K$ = CHR$(13) THEN Pre_Restart
 
     GOTO Wait_Options_Screen
 
