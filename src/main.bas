@@ -820,13 +820,43 @@ Wait_Options_Screen:
     REM K$ = CHR$(136) THEN GOSUB Set_Options_Screen__Decrease_Round_Count
 
     IF K$ = "I" THEN Print_Instructions
-    REM IF K$ = "C" THEN Print_Credits
+    IF K$ = "C" THEN Print_Credits
     IF K$ = CHR$(13) THEN Restart
 
     GOTO Wait_Options_Screen
 
     
+Print_Credits:
+    POKE 53281,5
+    PRINT "{clr}{home}"
+    PRINT " {white}Absolute Trash - Credits"
+    PRINT
+    PRINT " {black}Special Thanks to:"
+    PRINT
+    PRINT " {yellow}Phaze101 {white}and {black}Retro Programmers Inside"
+    PRINT " {white}({black}RPI{white}) for hosting the game jam."
+    PRINT
+    PRINT " https://itch.io/jam/cardgame"
+    PRINT
+    PRINT
+    PRINT " {black}John McLeod {white}and {black}https://www.pagat.com"
+    PRINT " {white}for hosting and maintaining such a"
+    PRINT " wonderful resource online, containing"
+    PRINT " the rules to many card games, and for"
+    PRINT " making them freely available."
+    PRINT
+    PRINT " {black}DeadSheppy{white}, for putting up with all my"
+    PRINT " ramblings on how this game was made,"
+    PRINT " the thought processes into the"
+    PRINT " decision making, for helping to test"
+    PRINT " the game, and for being supportive all"
+    PRINT " the way through the process."
+    PRINT
+    PRINT "                                - END -";
 
+Wait_Credits:
+    GET K$ : IF K$ = "" THEN Wait_Credits
+    GOTO Print_Title_Screen
 
 
 Print_Instructions:
