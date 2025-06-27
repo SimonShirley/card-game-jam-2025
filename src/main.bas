@@ -256,6 +256,9 @@ Initialise_Program:
     SI% = 52    : REM Shuffled Deck Current Index
     DI% = -1    : REM Discard Pile Current Index
 
+    MD% = -1     : REM Options Discard Flag
+    MW% = -1     : REM Options Wild Card Flag
+
     RD% = RND(-TI)
 
     GOTO Print_Title_Screen
@@ -725,11 +728,77 @@ Wait_Title_Screen:
     GET K$ : IF K$ = "" THEN Wait_Title_Screen
 
 Print_Options_Screen:
+    PRINT "{clr}{home}"
+    PRINT "            {blue}Absolute {red}Trash"
+    PRINT "            {black}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}"
+    PRINT
+    PRINT "        {white}A card game for the C64"
+    PRINT "     {white}By {brown}Alto{orange}Fluff{white}, May - June 2025"
+    PRINT
+    PRINT
+    PRINT "             {black}Game Options"
+    PRINT "             {black}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}"
+    PRINT
+    PRINT
+    GOSUB Print_Options_Screen__Print_Discard
+    PRINT
+    GOSUB Print_Options_Screen__Print_Wild
+    PRINT
+    PRINT : REM Rounds to Win
+    PRINT
+    PRINT
+    PRINT
+    PRINT "       {white}- Press {rvs on}RETURN{rvs off} to play -"
+    PRINT
+    PRINT
+    PRINT "  {white}I = Instructions      C - Credits"
 
-    MD% = -1     : REM Options Discard Flag
-    MW% = -1     : REM Options Wild Card Flag
+    GOTO Wait_Options_Screen
 
-    GOTO Restart
+Set_Options_Screen__Discard:
+    MD% = NOT MD%
+
+Print_Options_Screen__Print_Discard:
+    XP% = 0 : YP% = 12 : GOSUB Set_Cursor_Position
+    IF MD% THEN PRINT "  {white}Discard Pickup    (F1) : {rvs on}YES{rvs off} / NO" : RETURN
+    PRINT "  {white}Discard Pickup    (F1) : YES / {rvs on}NO{rvs off}"
+    RETURN
+
+Set_Options_Screen__Wild:
+    MW% = NOT MW%
+
+Print_Options_Screen__Print_Wild:
+    XP% = 0 : YP% = 14 : GOSUB Set_Cursor_Position
+    IF MW% THEN PRINT "  {white}Jack as Wild Card (F3) : {rvs on}YES{rvs off} / NO" : RETURN
+    PRINT "  {white}Jack as Wild Card (F3) : YES / {rvs on}NO{rvs off}"
+    RETURN
+
+Set_Options_Screen__Increase_Round_Count:
+    IF RC% < 9 THEN RC% = RC% + 1
+    GOTO Print_Options_Screen__Print_Round_Count
+
+Set_Options_Screen__Decrease_Round_Count:
+    IF RC% > 1 THEN RC% = RC% - 1
+    GOTO Print_Options_Screen__Print_Round_Count
+
+Print_Options_Screen__Print_Round_Count:
+    XP% = 0 : YP% = 16 : GOSUB Set_Cursor_Position
+    PRINT "  {white}Rounds to Win (F5/F7) :";RC%
+    RETURN
+
+Wait_Options_Screen:
+    GET K$
+
+    IF K$ = CHR$(133) THEN GOSUB Set_Options_Screen__Discard
+    IF K$ = CHR$(134) THEN GOSUB Set_Options_Screen__Wild
+    REM K$ = CHR$(135) THEN GOSUB Set_Options_Screen__Increase_Round_Count
+    REM K$ = CHR$(136) THEN GOSUB Set_Options_Screen__Decrease_Round_Count
+
+    IF K$ = "I" THEN Print_Instructions
+    REM IF K$ = "C" THEN Print_Credits
+    IF K$ = CHR$(13) THEN Restart
+
+    GOTO Wait_Options_Screen
 
     
 
