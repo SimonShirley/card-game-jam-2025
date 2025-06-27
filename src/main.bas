@@ -242,7 +242,7 @@ Update_Player_Display_Player_Win:
     FOR I = 0 TO 2000 : NEXT I
 
     PW% = PW% + 1
-    CP% = 0 : REM Set Computer turn, so that ready up flips to computer
+    CP% = 0 : REM Set Computer turn, so that ready up flips to player
     
     IF PW% = MR% THEN Print_Title_Screen
     GOTO Restart
@@ -253,7 +253,7 @@ Update_Player_Display_Computer_Win:
     FOR I = 0 TO 2000 : NEXT I
 
     CW% = CW% + 1
-    CP% = -1 : REM Set Computer turn, so that ready up flips to computer
+    CP% = -1 : REM Set player turn, so that ready up flips to computer
     
     IF CW% = MR% THEN Print_Title_Screen
     GOTO Restart
