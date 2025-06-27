@@ -272,7 +272,7 @@ Update_Player_Display_Computer_Win:
 
 Update_Player_Display_Stalemate:
     XP% = 0 : YP% = 12 : GOSUB Set_Cursor_Position : REM Set Cursor
-    PRINT "{rvs on}{green}{171}{99}{99}{99}{99}{99}{99}   STALEMATE DETECTED  {99}{99}{99}{99}{99}{99}{99}{99}{rvs off}";
+    PRINT "{rvs on}{green}{171}{99}{99}{99}{99}{99} STALEMATE DETECTED {99}{99}{99}{99}{rvs off}";
     FOR I = 0 TO 2000 : NEXT I
     GOTO Restart
 
