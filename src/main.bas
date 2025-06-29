@@ -489,10 +489,10 @@ Process_Player_Card:
 
     IF HP% = 11 AND K$ = CHR$(13) THEN Discard_Current_Card
 
-    IF HP% < 5 AND K$ = "S" THEN GOSUB Move_Marker_Down : GOTO Process_Player_Card
-    IF HP% >= 5 AND HP% < 10 AND K$ = "W" THEN GOSUB Move_Marker_Up : GOTO Process_Player_Card
-    IF HP% >= 0 AND HP% < 12 AND K$ = "D" THEN GOSUB Move_Marker_Right : GOTO Process_Player_Card
-    IF HP% > 0 AND HP% < 12 AND K$ = "A" THEN GOSUB Move_Marker_Left : GOTO Process_Player_Card
+    IF HP% < 5 AND (K$ = "S" OR K$ = CHR$(17)) THEN GOSUB Move_Marker_Down : GOTO Process_Player_Card
+    IF HP% >= 5 AND HP% < 10 AND (K$ = "W" OR K$ = CHR$(145)) THEN GOSUB Move_Marker_Up : GOTO Process_Player_Card
+    IF HP% >= 0 AND HP% < 12 AND (K$ = "D" OR K$ = CHR$(29)) THEN GOSUB Move_Marker_Right : GOTO Process_Player_Card
+    IF HP% > 0 AND HP% < 12 AND (K$ = "A" OR K$ = CHR$(157)) THEN GOSUB Move_Marker_Left : GOTO Process_Player_Card
 
     IF RA% > 10 THEN Process_Player_Card
 
@@ -584,8 +584,8 @@ Do_Player_Turn:
 Wait_Stack_Key:
     GET K$
 
-    IF DA% AND HP% = 10 AND K$ = "S" THEN GOSUB Highlight_Discard_Pile
-    IF DA% AND HP% = 11 AND K$ = "W" THEN GOSUB Highlight_Stack_Pile
+    IF DA% AND HP% = 10 AND (K$ = "S" OR K$ = CHR$(17)) THEN GOSUB Highlight_Discard_Pile
+    IF DA% AND HP% = 11 AND (K$ = "W" OR K$ = CHR$(145)) THEN GOSUB Highlight_Stack_Pile
     IF K$ = CHR$(13) THEN Process_Stack_Input
 
     GOTO Wait_Stack_Key
@@ -937,7 +937,7 @@ Print_Instructions:
     PRINT " card counts."
     PRINT
     PRINT " The cursor is moved around the screen"
-    PRINT " using the W, A, S and D keys."
+    PRINT " using the W, A, S, D or cursor keys."
     PRINT " Press RETURN to make your selection."
     PRINT
     PRINT "                               - MORE -";
