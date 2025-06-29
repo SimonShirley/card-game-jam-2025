@@ -8,17 +8,20 @@ Set_Cursor_Position:
     RETURN
 
 Get_Random_Number:
+    REM Get Random Number
     REM Returns RD% - Random Output
     RD% = INT(RND(1) * RD%)
     RETURN
 
 Get_Card_Value:
+    REM Get Card Value
     REM Requires CI% - Card Index Value
     REM Returns RA% - Rank Value
     RA% = CI% - (INT(CI% / 13) * 13)
     RETURN
 
 Get_Cart_Suit:
+    REM Get Card Suit
     REM Requires CI% - Card Index Value
     REM Returns SU% - Suit Index
 
@@ -31,6 +34,7 @@ Get_Cart_Suit:
     RETURN
 
 Shuffle_Deck:
+    REM Shuffle Deck
     REM Set Deck Shuffled Flag
     REM This is used to test for a stalemate situation
     SP% = -1
@@ -65,6 +69,7 @@ Shuffle_Deck__Continue:
     RETURN
 
 Shuffle_Discards:
+    REM Shuffle Discard Pile
     GOSUB Update_Shuffling_Message
 
     REM Set Deck Shuffled Flag
@@ -111,6 +116,7 @@ Shuffle_Discards__Continue:
     RETURN
 
 Highlight_Card_Bank_Position:
+    REM Highlight Card Bank Position
     REM Requires Highlight Position - HP%
     REM Requires Highlight Mode - HM% -> HM% = 1 Print, 0 - Remove
     REM Uses CP% for Player / Computer calculation
@@ -139,6 +145,7 @@ Highlight_Card_Bank_Position__Set_Bottom_Position:
     RETURN
 
 Place_Card_In_Bank:
+    REM Place Card In Bank
     REM Reset Deck Shuffled Flag
     REM This is used to test for a stalemate situation
     SP% = 0
@@ -156,6 +163,7 @@ Place_Card_In_Bank:
     RETURN
 
 Place_Card_Dealt_In_Bank:
+    REM Place Card Dealt In Bank
     CO% = RA% - (INT(RA% / 5) * 5) : REM Get the Column Index 
     RO% = INT(RA% / 5) : REM Get the Row Index
 
@@ -169,6 +177,7 @@ Place_Card_Dealt_In_Bank:
     RETURN
 
 Print_Current_Card:
+    REM Print Current Card
     GOSUB Get_Card_Value
     GOSUB Get_Cart_Suit
 
@@ -176,6 +185,7 @@ Print_Current_Card:
     PRINT "{rvs off}{red}   "
 
 Print_Current_Card__Rank:
+    REM Print Current Card Rank
     YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
     If RA% = 0  THEN PRINT " A " : GOTO Print_Current_Card__Suit
     If RA% = 9  THEN PRINT "10 " : GOTO Print_Current_Card__Suit
@@ -187,6 +197,7 @@ Print_Current_Card__Rank:
     PRINT TS$
 
 Print_Current_Card__Suit:
+    REM Print Current Card Suit
     YP% = YP% + 1 : GOSUB Set_Cursor_Position : REM Set Cursor
     IF SU% = 0 THEN PRINT " {97} "  : GOTO Print_Current_Card__Final_Line
     IF SU% = 1 THEN PRINT " {122} " : GOTO Print_Current_Card__Final_Line
@@ -200,6 +211,7 @@ Print_Current_Card__Final_Line:
     RETURN
 
 Print_Blank_Card:
+    REM Print Blank Card
     REM Requires YP% Set
     XP% = 35 : YP% = YP% - 1
     
@@ -212,6 +224,7 @@ Print_Blank_Card:
     RETURN
 
 Print_Card_Back:
+    REM Print Card Back
     REM Requires XP% and YP% to be set and cursor in position
     PRINT "{rvs on}{blue}{176}{99}{174}{green}{rvs off}";
 
@@ -278,6 +291,7 @@ Update_Player_Display_Stalemate:
 
 
 Initialise_Program:
+    REM Initialise Program
     VL = 1024  : REM $0400 - First Screen Location
     CR = 55296 : REM $D800 - Colour RAM Base
     
@@ -303,12 +317,14 @@ Initialise_Program:
     GOTO Print_Title_Screen
 
 Pre_Restart:
+    REM Pre-Restart
     PW% = 0     : REM Player Complete Win Score
     CW% = 0     : REM Computer Complete Win Score
 
     CP% = 0     : REM Current Player - -1 = Computer, 0 = Player
 
 Restart:
+    REM Restart
     PS% = 0 + PW%   : REM Player Uncovered Count
     CS% = 0 + CW%   : REM Computer Uncovered Count
 
@@ -324,8 +340,7 @@ Restart:
     GOSUB Shuffle_Deck
     GOSUB Game_Screen
 
-    REM Wait
-    FOR I = 0 TO 500 : NEXT I
+    FOR I = 0 TO 500 : NEXT I : REM Wait
 
     TD% = CP%   : REM Temp Previous Deal Holder
 
@@ -368,6 +383,7 @@ Deal_Cards_Continue:
     CP% = TD%   : REM Reset Previous Player
 
 Ready_Up_Next_Player:
+    REM Ready Up Next Player
     CP% = NOT CP% : REM Set Next Player
     DA% = 0 : REM Discard Available Flag
 
@@ -404,6 +420,7 @@ Ready_Up_Next_Player:
     IF CP% THEN Do_Player_Turn
 
 Do_Computer_Turn:
+    REM Do Computer Turn
     IF NOT DA% THEN Draw_Card_From_Card_Stack
 
     IF RA% = 10 AND NOT MW% THEN Draw_Card_From_Card_Stack
@@ -419,6 +436,7 @@ Do_Computer_Turn__Skip_Bank_Check:
     FOR J = 1 TO 300 : NEXT : REM Wait
 
 Get_Card_From_Discard_Pile:
+    REM Get Card From Discard Pile
     HP% = 10 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
     HP% = 11 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
 
@@ -455,6 +473,7 @@ Get_Discarded_Card:
     GOTO Process_Card
 
 Draw_Card_From_Card_Stack:
+    REM Draw Card from Card Stack
     HP% = 10 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
     HP% = 11 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
 
@@ -466,7 +485,6 @@ Draw_Card_From_Card_Stack:
     YP% = 2 : GOSUB Print_Blank_Card
 
 Draw_Card_From_Card_Stack_Continue:
-
     REM Display First Card
     XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
     GOSUB Print_Current_Card
@@ -476,12 +494,14 @@ Draw_Card_From_Card_Stack_Continue:
     IF RA% > 10 AND NOT CP% THEN Discard_Current_Card
 
 Process_Card:
+    REM Process Card
     IF NOT CP% THEN Process_Computer_Card
 
     REM Set Cursor to player discard pile position
     GOSUB Highlight_Discard_Pile
 
 Process_Player_Card:
+    REM Process Player Card
     WF% = 0 : REM Reset Wild Flag
     TC% = -1 : REM Reset Temporary Wild Card
 
@@ -505,16 +525,19 @@ Process_Player_Card:
 
 
 Move_Marker_Down:
+    REM Move Marker Down
     HM% = 0 : GOSUB Highlight_Card_Bank_Position
     HP% = HP% + 5 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
     RETURN
 
 Move_Marker_Up:
+    REM Move Marker Up
     HM% = 0 : GOSUB Highlight_Card_Bank_Position
     HP% = HP% - 5 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
     RETURN
 
 Move_Marker_Left:
+    REM Move Marker Left
     IF HP% < 0 OR HP% = 5 THEN RETURN
 
     HM% = 0 : GOSUB Highlight_Card_Bank_Position    
@@ -525,6 +548,7 @@ Move_Marker_Left:
     RETURN
 
 Move_Marker_Right:
+    REM Move Marker Right
     IF HP% > 10 THEN RETURN
 
     HM% = 0 : GOSUB Highlight_Card_Bank_Position
@@ -535,6 +559,7 @@ Move_Marker_Right:
     RETURN
 
 Player_Wild_Card_Check:
+    REM Player Wild Card Check
     REM If Wild Cards Disabled, skip
     IF RA% = 10 AND NOT MW% THEN Process_Player_Card
 
@@ -544,6 +569,7 @@ Player_Wild_Card_Check:
     RA% = HP% : REM Set card rank equal to current position
     
 Place_Player_Card_In_Bank:
+    REM Place Player Card in Bank
     YP% = 20 : GOSUB Print_Blank_Card
 
     IF PU%(RA%) = 0 THEN PU%(RA%) = -1
@@ -575,6 +601,7 @@ Place_Player_Card_In_Bank:
     GOTO Process_Player_Card
 
 Do_Player_Turn:
+    REM Do Player Turn
     IF NOT DA% THEN Wait_Stack_Key
 
     REM If card has already been turned, draw from the stack
@@ -582,6 +609,7 @@ Do_Player_Turn:
     IF PU%(RA%) = -1 THEN DA% = 0
 
 Wait_Stack_Key:
+    REM Wait on Stack keypress
     GET K$
 
     IF DA% AND HP% = 10 AND (K$ = "S" OR K$ = CHR$(17)) THEN GOSUB Highlight_Discard_Pile
@@ -591,6 +619,7 @@ Wait_Stack_Key:
     GOTO Wait_Stack_Key
 
 Highlight_Stack_Pile:
+    REM Highlight Stack Pile
     REM Remove Highlight From Card Stack
     HP% = 11 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
     HP% = 10 : HM% = -1 : GOSUB Highlight_Card_Bank_Position
@@ -598,6 +627,7 @@ Highlight_Stack_Pile:
     RETURN
 
 Highlight_Discard_Pile:
+    REM Highlight Discard Pile
     REM Remove Highlight From Card Stack
     HP% = 10 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
     HP% = 11 : HM% = -1 : GOSUB Highlight_Card_Bank_Position
@@ -606,6 +636,7 @@ Highlight_Discard_Pile:
 
 
 Process_Stack_Input:
+    REM Process Stack Input
     IF HP% = 10 THEN Draw_Card_From_Card_Stack
     IF HP% = 11 THEN Get_Card_From_Discard_Pile
 
@@ -613,6 +644,7 @@ Process_Stack_Input:
 
 
 Process_Computer_Card:
+    REM Process Computer Card
     WF% = 0 : REM Reset Wild Flag
     TC% = -1 : REM Reset Temporary Wild Card
 
@@ -675,6 +707,7 @@ Process_Computer_Card__Play_Normal_Card:
     
 
 Discard_Current_Card:
+    REM Discard Current Card
     HP% = 11 : HM% = -1 : GOSUB Highlight_Card_Bank_Position
 
     YP% = 20 : GOSUB Print_Blank_Card
@@ -691,6 +724,7 @@ Discard_Current_Card:
 
 
 Game_Screen:
+    REM Print Game screen
     POKE 53280,5 : REM Set border colour to green - $D020
 
     REM Disable the screen. This way, we can draw to the screen
@@ -741,6 +775,7 @@ Game_Screen:
     RETURN
 
 Print_Blank_Screen:
+    REM Print Blank Screen
     POKE 53280,5 : REM Set border colour to green - $D020
 
     REM Disable the screen. This way, we can draw to the screen
