@@ -1,0 +1,20 @@
+S=54272
+
+FOR L = 0 TO 24 : POKE S + L,0 : NEXT
+
+POKE S + 0,240 : POKE S + 1,20
+POKE S + 5,72
+POKE S + 22,5
+POKE S + 23,1
+POKE S + 24,79
+
+FOR N = 1 TO 15
+    POKE S + 4,129
+    
+    FOR T = 1 TO 96 : NEXT
+    POKE S + 4,128
+
+    FOR T = 1 TO 30 : NEXT
+NEXT
+
+POKE S + 24,0

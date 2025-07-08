@@ -33,11 +33,53 @@ Get_Cart_Suit:
     SU% = INT(CI% / 13)
     RETURN
 
+Setup_Card_Shuffle_Sound:
+    REM Reset Sound Memory
+    FOR T = 0 TO 24 : POKE SL + T,0 : NEXT
+
+    REM Set High Pulse Width for Voice 1
+    POKE SL + 0,240 : POKE SL + 1,20
+
+    REM Set Attack/Decay for voice 1 (A=4,D=8)
+    POKE SL + 5,72
+
+    REM Set High Cut-off frequency for filter
+    POKE SL + 22,0
+
+    REM Turn on Voice 1 filter
+    POKE SL + 23,1
+
+    REM Set Volume and high pass filter
+    POKE SL + 24,79
+
+    RETURN
+
+Setup_Card_Sound:
+    REM Set High Pulse Width for Voice 1
+    POKE SL + 0,240 : POKE SL + 1,20
+
+    REM Set Attack/Decay for voice 1 (A=4,D=8)
+    POKE SL + 5,34
+
+    REM Set High Cut-off frequency for filter
+    POKE SL + 22,0
+
+    REM Turn on Voice 1 filter
+    POKE SL + 23,0
+
+    REM Set Volume and high pass filter
+    POKE SL + 24,15
+
+    RETURN
+
+
 Shuffle_Deck:
     REM Shuffle Deck
     REM Set Deck Shuffled Flag
     REM This is used to test for a stalemate situation
     SP% = -1
+
+    GOSUB Setup_Card_Shuffle_Sound
 
     REM Reset Deck
     FOR I = 0 TO 51
@@ -51,11 +93,17 @@ Shuffle_Deck:
         SD%(I) = DP%(RD%) : REM Get card from deck
 
         IF RD% >= 51 THEN Shuffle_Deck__Continue
-        
+
         REM Slide cards along one
         FOR J = RD% TO 50
+            POKE SL + 4, 129 : REM Start Shuffle Sound
             DP%(J) = DP%(J + 1)
+
+            REM Stop shuffle sound after a delay, depending on modulo
+            IF J - (INT(J / 10) * 10) = 0 THEN POKE SL + 4, 128
         NEXT J
+
+        POKE SL + 4, 128 : REM Stop Shuffle Sound
 
 Shuffle_Deck__Continue:
         XP% = I - (INT(I / 26) * 26) : YP% = 2
@@ -66,6 +114,8 @@ Shuffle_Deck__Continue:
         GOSUB Print_Card_Back
     NEXT I
 
+    POKE SL + 24,0 : REM Disable Sound
+
     RETURN
 
 Shuffle_Discards:
@@ -75,6 +125,8 @@ Shuffle_Discards:
     REM Set Deck Shuffled Flag
     REM This is used to test for a stalemate situation
     SP% = -1
+
+    GOSUB Setup_Card_Shuffle_Sound
 
     REM Reset Shuffled Deck
     FOR I = 0 TO 51
@@ -91,8 +143,14 @@ Shuffle_Discards:
         
         REM Slide cards along one
         FOR J = RD% TO DI% - 1
+            POKE SL + 4, 129 : REM Start Shuffle Sound
             DP%(J) = DP%(J + 1)
+
+            REM Stop shuffle sound after a delay, depending on modulo
+            IF J - (INT(J / 10) * 10) = 0 THEN POKE SL + 4, 128
         NEXT J
+
+        POKE SL + 4, 128 : REM Stop Shuffle Sound
 
 Shuffle_Discards__Continue:
     NEXT I
@@ -110,6 +168,8 @@ Shuffle_Discards__Continue:
 
     XP% = 35 : YP% = 2 : GOSUB Set_Cursor_Position
     GOSUB Print_Card_Back
+
+    POKE SL + 24,0 : REM Disable Sound
 
     FOR I = 0 TO 300 : NEXT I : REM Wait
 
@@ -146,6 +206,10 @@ Highlight_Card_Bank_Position__Set_Bottom_Position:
 
 Place_Card_In_Bank:
     REM Place Card In Bank
+
+    GOSUB Setup_Card_Sound
+    POKE SL + 4,129 : REM Start Card Sound
+
     REM Reset Deck Shuffled Flag
     REM This is used to test for a stalemate situation
     SP% = 0
@@ -160,10 +224,17 @@ Place_Card_In_Bank:
 
     GOSUB Set_Cursor_Position    
     GOSUB Print_Current_Card
+
+    POKE SL + 4,128 : REM Stop Card Sound
+    POKE SL + 24,0 : REM Disable Sound
+
     RETURN
 
 Place_Card_Dealt_In_Bank:
     REM Place Card Dealt In Bank
+    GOSUB Setup_Card_Sound
+    POKE SL + 4,129 : REM Start Card Sound
+
     CO% = RA% - (INT(RA% / 5) * 5) : REM Get the Column Index 
     RO% = INT(RA% / 5) : REM Get the Row Index
 
@@ -174,6 +245,9 @@ Place_Card_Dealt_In_Bank:
 
     GOSUB Set_Cursor_Position    
     GOSUB Print_Card_Back
+
+    POKE SL + 4,128 : REM Stop Card Sound
+    POKE SL + 24,0 : REM Disable Sound
     RETURN
 
 Print_Current_Card:
@@ -294,6 +368,11 @@ Initialise_Program:
     REM Initialise Program
     VL = 1024  : REM $0400 - First Screen Location
     CR = 55296 : REM $D800 - Colour RAM Base
+
+    SL = 54272 : REM SID Location
+    
+    REM Reset Sound Memory
+    FOR T = 0 TO 24 : POKE SL + T,0 : NEXT
     
     RA% = 0 : REM Card Rank
     SU% = 0 : REM Card Suit - 0 - Spades, 1 - Diamonds, 2 - Clubs, 3 - Hearts
@@ -437,6 +516,9 @@ Do_Computer_Turn__Skip_Bank_Check:
 
 Get_Card_From_Discard_Pile:
     REM Get Card From Discard Pile
+    GOSUB Setup_Card_Sound
+    POKE SL + 4, 129
+
     HP% = 10 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
     HP% = 11 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
 
@@ -448,6 +530,10 @@ Get_Card_From_Discard_Pile:
 
     XP% = 35 : YP% = 11 : GOSUB Set_Cursor_Position : REM Set Cursor
     GOSUB Print_Current_Card
+
+    POKE SL + 4,128 : REM Stop Card Sound
+    POKE SL + 24,0 : REM Disable Sound
+
     GOTO Get_Discarded_Card
 
 Blank_Discard_Pile:
@@ -474,6 +560,10 @@ Get_Discarded_Card:
 
 Draw_Card_From_Card_Stack:
     REM Draw Card from Card Stack
+
+    GOSUB Setup_Card_Sound
+    POKE SL + 4,129 : REM Start Card Sound
+
     HP% = 10 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
     HP% = 11 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
 
@@ -488,6 +578,9 @@ Draw_Card_From_Card_Stack_Continue:
     REM Display First Card
     XP% = 35 : YP% = 20 : GOSUB Set_Cursor_Position : REM Set Cursor
     GOSUB Print_Current_Card
+
+    POKE SL + 4,128 : REM Stop Card Sound
+    POKE SL + 24,0 : REM Disable Sound
 
     FOR J = 1 TO 300 : NEXT : REM Wait
 
@@ -708,6 +801,9 @@ Process_Computer_Card__Play_Normal_Card:
 
 Discard_Current_Card:
     REM Discard Current Card
+    GOSUB Setup_Card_Sound
+    POKE SL + 4,129 : REM Start Card Sound
+
     HP% = 11 : HM% = -1 : GOSUB Highlight_Card_Bank_Position
 
     YP% = 20 : GOSUB Print_Blank_Card
@@ -719,6 +815,9 @@ Discard_Current_Card:
     DP%(DI%) = CI%
 
     HP% = 11 : HM% = 0 : GOSUB Highlight_Card_Bank_Position
+
+    POKE SL + 4,128
+    POKE SL + 24,0
 
     GOTO Ready_Up_Next_Player
 
