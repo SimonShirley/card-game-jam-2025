@@ -61,15 +61,35 @@ Setup_Card_Sound:
     REM Set Attack/Decay for voice 1 (A=4,D=8)
     POKE SL + 5,34
 
-    REM Set High Cut-off frequency for filter
+    REM Disable High Cut-off frequency for filter
     POKE SL + 22,0
 
-    REM Turn on Voice 1 filter
+    REM Turn off Voice 1 filter
     POKE SL + 23,0
 
-    REM Set Volume and high pass filter
+    REM Set Volume
     POKE SL + 24,15
 
+    RETURN
+
+
+Play_Cursor_Positive_Sound:
+    REM Play Cursor Positive Sound
+    REM Set Frequency
+    POKE SL,189 : POKE SL+1,172
+
+    REM Set Volume
+    POKE SL + 24,15
+
+    REM Start Sound
+    POKE SL + 4,33
+    
+    FOR T = 1 TO 100 : NEXT T
+    
+    REM Stop Sound
+    POKE SL + 4,32
+    POKE SL + 24,0
+    
     RETURN
 
 
@@ -621,12 +641,16 @@ Move_Marker_Down:
     REM Move Marker Down
     HM% = 0 : GOSUB Highlight_Card_Bank_Position
     HP% = HP% + 5 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
+
+    GOSUB Play_Cursor_Positive_Sound
     RETURN
 
 Move_Marker_Up:
     REM Move Marker Up
     HM% = 0 : GOSUB Highlight_Card_Bank_Position
     HP% = HP% - 5 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
+
+    GOSUB Play_Cursor_Positive_Sound
     RETURN
 
 Move_Marker_Left:
@@ -638,6 +662,8 @@ Move_Marker_Left:
     IF HP% = 11 THEN HP% = 5
 
     HP% = HP% - 1 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
+
+    GOSUB Play_Cursor_Positive_Sound
     RETURN
 
 Move_Marker_Right:
@@ -649,6 +675,8 @@ Move_Marker_Right:
     IF HP% = 4 OR HP% >= 9 THEN HP% = 10
 
     HP% = HP% + 1 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
+
+    GOSUB Play_Cursor_Positive_Sound
     RETURN
 
 Player_Wild_Card_Check:
