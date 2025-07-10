@@ -76,8 +76,22 @@ Setup_Card_Sound:
 Play_Cursor_Positive_Sound:
     REM Play Cursor Positive Sound
     REM Set Frequency
-    POKE SL,189 : POKE SL+1,172
+    POKE SL,214 : POKE SL+1,94
 
+    GOSUB Play_Cursor_Sound
+    
+    RETURN
+
+Play_Cursor_Negative_Sound:
+    REM Play Cursor Positive Sound
+    REM Set Frequency
+    POKE SL,181 : POKE SL+1,23
+
+    GOSUB Play_Cursor_Sound
+    
+    RETURN
+
+Play_Cursor_Sound:
     REM Set Volume
     POKE SL + 24,15
 
@@ -89,7 +103,7 @@ Play_Cursor_Positive_Sound:
     REM Stop Sound
     POKE SL + 4,32
     POKE SL + 24,0
-    
+
     RETURN
 
 
@@ -627,12 +641,17 @@ Process_Player_Card:
     IF HP% >= 0 AND HP% < 12 AND (K$ = "D" OR K$ = CHR$(29)) THEN GOSUB Move_Marker_Right : GOTO Process_Player_Card
     IF HP% > 0 AND HP% < 12 AND (K$ = "A" OR K$ = CHR$(157)) THEN GOSUB Move_Marker_Left : GOTO Process_Player_Card
 
+    IF RA% > 10 AND K$ = CHR$(13) THEN GOSUB Play_Cursor_Negative_Sound
     IF RA% > 10 THEN Process_Player_Card
 
     IF RA% = 10 AND NOT K$ = CHR$(13) THEN Process_Player_Card
     IF RA% = 10 AND K$ = CHR$(13) THEN Player_Wild_Card_Check : REM Toggle Wild Card Check
 
     IF HP% = RA% AND RA% < 10 AND PU%(RA%) <> -1 AND K$ = CHR$(13) THEN Place_Player_Card_In_Bank
+
+    REM If return pressed and all other validations failed,
+    REM play dull sound as an incorrect input
+    IF K$ = CHR$(13) THEN GOSUB Play_Cursor_Negative_Sound
 
     GOTO Process_Player_Card
 
@@ -682,11 +701,11 @@ Move_Marker_Right:
 Player_Wild_Card_Check:
     REM Player Wild Card Check
     REM If Wild Cards Disabled, skip
-    IF RA% = 10 AND NOT MW% THEN Process_Player_Card
+    IF RA% = 10 AND NOT MW% THEN GOSUB Play_Cursor_Negative_Sound : GOTO Process_Player_Card
 
     IF RA% = 10 THEN WF% = -1
 
-    IF HP% >= 0 AND HP% < 10 AND PU%(HP%) <> 0 THEN Process_Player_Card
+    IF HP% >= 0 AND HP% < 10 AND PU%(HP%) <> 0 THEN GOSUB Play_Cursor_Negative_Sound: GOTO Process_Player_Card
     RA% = HP% : REM Set card rank equal to current position
     
 Place_Player_Card_In_Bank:
@@ -733,9 +752,15 @@ Wait_Stack_Key:
     REM Wait on Stack keypress
     GET K$
 
-    IF DA% AND HP% = 10 AND (K$ = "S" OR K$ = CHR$(17)) THEN GOSUB Highlight_Discard_Pile
-    IF DA% AND HP% = 11 AND (K$ = "W" OR K$ = CHR$(145)) THEN GOSUB Highlight_Stack_Pile
+    IF DA% AND HP% = 10 AND (K$ = "S" OR K$ = CHR$(17)) THEN GOSUB Highlight_Discard_Pile : GOTO Wait_Stack_Key
+    IF DA% AND HP% = 11 AND (K$ = "W" OR K$ = CHR$(145)) THEN GOSUB Highlight_Stack_Pile : GOTO Wait_Stack_Key
     IF K$ = CHR$(13) THEN Process_Stack_Input
+
+    IF K$ = "" THEN Wait_Stack_Key
+
+    IF NOT DA% AND K$ <> CHR$(13) THEN GOSUB Play_Cursor_Negative_Sound
+    IF DA% AND HP% = 10 AND K$ <> "S" AND K$ <> CHR$(17) THEN GOSUB Play_Cursor_Negative_Sound
+    IF DA% AND HP% = 11 AND K$ <> "W" AND K$ <> CHR$(145) THEN GOSUB Play_Cursor_Negative_Sound
 
     GOTO Wait_Stack_Key
 
