@@ -407,6 +407,9 @@ Initialise_Program:
     
     REM Reset Sound Memory
     FOR T = 0 TO 24 : POKE SL + T,0 : NEXT
+
+    POKE 649,1 : REM Set Keyboard Buffer size to 1
+    POKE 650,64 : REM Disable Key Hold
     
     RA% = 0 : REM Card Rank
     SU% = 0 : REM Card Suit - 0 - Spades, 1 - Diamonds, 2 - Clubs, 3 - Hearts
