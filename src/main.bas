@@ -636,10 +636,10 @@ Process_Player_Card:
 
     IF HP% = 11 AND K$ = CHR$(13) THEN Discard_Current_Card
 
-    IF HP% < 5 AND (K$ = "S" OR K$ = CHR$(17)) THEN GOSUB Move_Marker_Down : GOTO Process_Player_Card
-    IF HP% >= 5 AND HP% < 10 AND (K$ = "W" OR K$ = CHR$(145)) THEN GOSUB Move_Marker_Up : GOTO Process_Player_Card
-    IF HP% >= 0 AND HP% < 12 AND (K$ = "D" OR K$ = CHR$(29)) THEN GOSUB Move_Marker_Right : GOTO Process_Player_Card
-    IF HP% > 0 AND HP% < 12 AND (K$ = "A" OR K$ = CHR$(157)) THEN GOSUB Move_Marker_Left : GOTO Process_Player_Card
+    IF HP% < 5 AND (K$ = "S" OR K$ = CHR$(17)) THEN Move_Marker_Down
+    IF HP% >= 5 AND HP% < 10 AND (K$ = "W" OR K$ = CHR$(145)) THEN Move_Marker_Up
+    IF HP% >= 0 AND HP% < 12 AND (K$ = "D" OR K$ = CHR$(29)) THEN Move_Marker_Right
+    IF HP% >= 0 AND HP% < 12 AND (K$ = "A" OR K$ = CHR$(157)) THEN Move_Marker_Left
 
     IF RA% > 10 AND K$ = CHR$(13) THEN GOSUB Play_Cursor_Negative_Sound
     IF RA% > 10 THEN Process_Player_Card
@@ -649,9 +649,9 @@ Process_Player_Card:
 
     IF HP% = RA% AND RA% < 10 AND PU%(RA%) <> -1 AND K$ = CHR$(13) THEN Place_Player_Card_In_Bank
 
-    REM If return pressed and all other validations failed,
-    REM play dull sound as an incorrect input
-    IF K$ = CHR$(13) THEN GOSUB Play_Cursor_Negative_Sound
+    REM If key pressed and all other validations failed
+    REM play negative sound as an incorrect input
+    IF K$ <> "" THEN GOSUB Play_Cursor_Negative_Sound
 
     GOTO Process_Player_Card
 
@@ -662,7 +662,7 @@ Move_Marker_Down:
     HP% = HP% + 5 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
 
     GOSUB Play_Cursor_Positive_Sound
-    RETURN
+    GOTO Process_Player_Card
 
 Move_Marker_Up:
     REM Move Marker Up
@@ -670,11 +670,11 @@ Move_Marker_Up:
     HP% = HP% - 5 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
 
     GOSUB Play_Cursor_Positive_Sound
-    RETURN
+    GOTO Process_Player_Card
 
 Move_Marker_Left:
     REM Move Marker Left
-    IF HP% < 0 OR HP% = 5 THEN RETURN
+    IF HP% <= 0 OR HP% = 5 THEN GOSUB Play_Cursor_Negative_Sound : GOTO Process_Player_Card
 
     HM% = 0 : GOSUB Highlight_Card_Bank_Position    
 
@@ -683,11 +683,11 @@ Move_Marker_Left:
     HP% = HP% - 1 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
 
     GOSUB Play_Cursor_Positive_Sound
-    RETURN
+    GOTO Process_Player_Card
 
 Move_Marker_Right:
     REM Move Marker Right
-    IF HP% > 10 THEN RETURN
+    IF HP% > 10 THEN GOSUB Play_Cursor_Negative_Sound : GOTO Process_Player_Card
 
     HM% = 0 : GOSUB Highlight_Card_Bank_Position
 
@@ -696,7 +696,7 @@ Move_Marker_Right:
     HP% = HP% + 1 : HM% = -1  : GOSUB Highlight_Card_Bank_Position
 
     GOSUB Play_Cursor_Positive_Sound
-    RETURN
+    GOTO Process_Player_Card
 
 Player_Wild_Card_Check:
     REM Player Wild Card Check
