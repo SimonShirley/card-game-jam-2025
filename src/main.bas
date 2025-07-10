@@ -134,7 +134,7 @@ Shuffle_Deck:
             DP%(J) = DP%(J + 1)
 
             REM Stop shuffle sound after a delay, depending on modulo
-            IF J - (INT(J / 10) * 10) = 0 THEN POKE SL + 4, 128
+            IF (J AND 7) = 0 THEN POKE SL + 4, 128
         NEXT J
 
         POKE SL + 4, 128 : REM Stop Shuffle Sound
