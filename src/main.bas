@@ -106,6 +106,27 @@ Play_Cursor_Sound:
 
     RETURN
 
+Play_Win_Jingle:
+    IF CP% THEN Play_Win_Jingle_Player
+
+Play_Win_Jingle_Computer:
+    FOR WJ = 3 TO 0 STEP -1
+        POKE SL,WJ%(WJ, 0)
+        POKE SL+1,WJ%(WJ, 1)
+        GOSUB Play_Cursor_Sound
+    NEXT WJ
+
+    RETURN
+
+Play_Win_Jingle_Player:
+    FOR WJ = 0 TO 3
+        POKE SL,WJ%(WJ, 0)
+        POKE SL+1,WJ%(WJ, 1)
+        GOSUB Play_Cursor_Sound
+    NEXT WJ
+    
+    RETURN
+
 
 Shuffle_Deck:
     REM Shuffle Deck
@@ -372,6 +393,9 @@ Update_Player_Display__Computer:
 Update_Player_Display_Player_Win:
     XP% = 0 : YP% = 12 : GOSUB Set_Cursor_Position : REM Set Cursor
     PRINT "{rvs on}{green}{171}{99}{99}{99}{99}{99}{99}{99}{99}  PLAYER  WINS {99}{99}{99}{99}{99}{99}{99}{99}{rvs off}";
+
+    GOSUB Play_Win_Jingle : REM Play Win Jingle
+
     FOR I = 0 TO 2000 : NEXT I
 
     PW% = PW% + 1
@@ -383,6 +407,9 @@ Update_Player_Display_Player_Win:
 Update_Player_Display_Computer_Win:
     XP% = 0 : YP% = 12 : GOSUB Set_Cursor_Position : REM Set Cursor
     PRINT "{rvs on}{green}{171}{99}{99}{99}{99}{99}{99}{99}{99} COMPUTER WINS {99}{99}{99}{99}{99}{99}{99}{99}{rvs off}";
+
+    GOSUB Play_Win_Jingle : REM Play Win Jingle
+
     FOR I = 0 TO 2000 : NEXT I
 
     CW% = CW% + 1
@@ -423,6 +450,13 @@ Initialise_Program:
     DIM CU%(9) : REM Computer Uncovered Cards    
 
     DIM DP%(51) : REM Discard Pile
+
+    DIM WJ%(3,1) : REM Win Lose Jingle Notes
+
+    WJ%(0,0) = 134 : WJ%(0,1) = 35
+    WJ%(1,0) = 223 : WJ%(1,1) = 39
+    WJ%(2,0) = 193 : WJ%(2,1) = 44
+    WJ%(3,0) = 107 : WJ%(3,1) = 47
 
     MD% = -1    : REM Options Discard Flag
     MW% = -1    : REM Options Wild Card Flag
