@@ -262,31 +262,15 @@ Highlight_Card_Bank_Position__Set_Bottom_Position:
 Place_Card_In_Bank:
     REM Place Card In Bank
 
-    GOSUB Setup_Card_Sound
-    POKE SL + 4,129 : REM Start Card Sound
-
     REM Reset Deck Shuffled Flag
     REM This is used to test for a stalemate situation
     SP% = 0
 
-    CO% = RA% - (INT(RA% / 5) * 5) : REM Get the Column Index 
-    RO% = INT(RA% / 5) : REM Get the Row Index
-
-    XP% = (CO% * 6) + 3 : REM Convert Column Index into Character position
-    YP% = (RO% * 6) + 1 : REM Convert Row Index into screen line
-
-    IF CP% THEN YP% = YP% + 13 : REM Move the screen line into player set
-
-    GOSUB Set_Cursor_Position    
-    GOSUB Print_Current_Card
-
-    POKE SL + 4,128 : REM Stop Card Sound
-    POKE SL + 24,0 : REM Disable Sound
-
-    RETURN
+    CB% = -1 : REM Card Bank Flag
 
 Place_Card_Dealt_In_Bank:
     REM Place Card Dealt In Bank
+
     GOSUB Setup_Card_Sound
     POKE SL + 4,129 : REM Start Card Sound
 
@@ -298,12 +282,19 @@ Place_Card_Dealt_In_Bank:
 
     IF CP% THEN YP% = YP% + 13 : REM Move the screen line into player set
 
-    GOSUB Set_Cursor_Position    
+    GOSUB Set_Cursor_Position
+
+    IF CB% THEN GOSUB Print_Current_Card : GOTO Place_Card_In_Bank__Continue
     GOSUB Print_Card_Back
 
+Place_Card_In_Bank__Continue:
     POKE SL + 4,128 : REM Stop Card Sound
     POKE SL + 24,0 : REM Disable Sound
+
+    CB% = 0
+
     RETURN
+
 
 Print_Current_Card:
     REM Print Current Card
@@ -1034,7 +1025,7 @@ Print_Options_Screen:
     PRINT "            {black}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}{99}"
     PRINT
     PRINT "        {white}A card game for the C64"
-    PRINT "     {white}By {brown}Alto{orange}Fluff{white}, May - June 2025"
+    PRINT "     {white}By {brown}Alto{orange}Fluff{white}, May - July 2025"
     PRINT
     PRINT
     PRINT "             {black}Game Options"
