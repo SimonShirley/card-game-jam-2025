@@ -1262,7 +1262,7 @@ Wait_Instruction_Key_4:
     PRINT " previous player has discarded a card"
     PRINT " that the player requires, the player"
     PRINT " may pick up and play the discarded"
-    PRINT " card instead of staring their turn"
+    PRINT " card instead of starting their turn"
     PRINT " from the stack."
     PRINT
     PRINT
@@ -1299,7 +1299,7 @@ Wait_Instruction_Key_5:
     PRINT
     PRINT " If more than one round is to be"
     PRINT " played, the winner from the previous"
-    PRINT " round will have 1 fewer card to bank,"
+    PRINT " round will have 1 fewer cards to bank,"
     PRINT " starting from 10, (leaving A - 9"
     PRINT " remaining, and so on)."
     PRINT
